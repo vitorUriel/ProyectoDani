@@ -127,20 +127,11 @@ html(lang="es")
     // SIDEBAR
     .sidebar
       h2 ADMIN GENERAL
-      a(href="#")
+      a(href="/reporteMensu")
         i.bi.bi-house-door-fill
-        | Inicio
-      a(href="#")
-        i.bi.bi-people-fill
-        | Usuarios
-      a(href="#")
-        i.bi.bi-bar-chart
-        | Reportes
-      a(href="#")
-        i.bi.bi-gear-fill
-        | Configuración
+        | Reportes Mensuales
       a(href="/login")
-        i.bi.bi-box-arrow-right
+        i.bi.bi-gear-fill
         | Cerrar sesión
     // CONTENIDO
     .main
@@ -148,7 +139,7 @@ html(lang="es")
         h1 Gestión de Usuarios
         p Administración del sistema
       .card
-        button.btn(onclick="window.location.href='crear_usuario.html'")
+        button.btn(onclick="window.location.href='/altasUsuario'")
           i.bi.bi-person-plus
           | Nuevo Usuario
         h2 Lista de usuarios
