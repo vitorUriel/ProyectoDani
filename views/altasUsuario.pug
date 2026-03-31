@@ -1,0 +1,171 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Crear Usuario
+
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css", rel="stylesheet")
+
+    style.
+      :root {
+        --verde1: #99E89D;
+        --verde2: #73C883;
+        --verde3: #4DA768;
+        --verde4: #2E874E;
+        --verde5: #006633;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #4CAF50, #81C784);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .form-container {
+        background: white;
+        padding: 30px;
+        width: 420px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      }
+
+      h2 {
+        text-align: center;
+        color: var(--verde5);
+        margin-bottom: 20px;
+      }
+
+      .field {
+        margin-bottom: 15px;
+      }
+
+      .field label {
+        font-size: 13px;
+        color: #555;
+      }
+
+      .field input,
+      .field select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        transition: 0.3s;
+      }
+
+      .field input:focus,
+      .field select:focus {
+        border-color: var(--verde3);
+        outline: none;
+        box-shadow: 0 0 5px rgba(77,167,104,0.4);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--verde4);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+        margin-top: 10px;
+      }
+
+      .btn:hover {
+        background: var(--verde5);
+        transform: translateY(-1px);
+      }
+
+      .back-btn {
+        margin-top: 10px;
+        width: 100%;
+        padding: 10px;
+        background: var(--verde2);
+        color: var(--verde5);
+        border: 1px solid var(--verde4);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .back-btn:hover {
+        background: var(--verde3);
+        color: white;
+      }
+
+      .input-icon {
+        position: relative;
+      }
+
+      .input-icon i {
+        position: absolute;
+        top: 38px;
+        left: 10px;
+        color: #888;
+      }
+
+      .input-icon input {
+        padding-left: 35px;
+      }
+
+  body
+    form.form-container(action="/usuarios", method="POST")
+      h2
+        i.bi.bi-person-plus-fill
+        |  Crear Usuario
+
+      .field.input-icon
+        label Nombre
+        i.bi.bi-person
+        input(type="text", name="nombre", required)
+
+      .field.input-icon
+        label Correo
+        i.bi.bi-envelope
+        input(type="email", name="correo", required)
+
+      .field.input-icon
+        label Contraseña
+        i.bi.bi-lock
+        input(type="password", name="password", required)
+
+      .field
+        label Nivel
+        select(name="nivel")
+          option(value="1") Usuario
+          option(value="2") Admin General
+          option(value="3") Admin Mantenimiento
+          option(value="4") Admin Jardinería
+          option(value="5") Admin Limpieza
+          option(value="6") Admin Soporte
+
+      .field
+        label Departamento
+        select(name="departamento")
+          option(value="") N/A
+          option(value="Administrador") Administrador
+          option(value="Mantenimiento") Mantenimiento
+          option(value="Jardinería") Jardinería
+          option(value="Limpieza") Limpieza
+          option(value="Soporte") Soporte
+
+      button.btn(type="submit")
+        i.bi.bi-check-circle
+        |  Crear Usuario
+
+      button.back-btn(type="button", onclick="window.history.back()")
+        i.bi.bi-arrow-left
+        |  Regresar

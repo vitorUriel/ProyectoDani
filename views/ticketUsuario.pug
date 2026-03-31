@@ -1,0 +1,186 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Crear Ticket
+
+    // Bootstrap icons
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css", rel="stylesheet")
+
+    style.
+      :root {
+      --verde1: #99E89D;
+      --verde2: #73C883;
+      --verde3: #4DA768;
+      --verde4: #2E874E;
+      --verde5: #006633;
+      --blanco: #ffffff;
+      --gris: #f4f4f4;
+      }
+
+      * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      }
+
+      body {
+      background: linear-gradient(135deg, #4CAF50, #81C784);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      }
+
+      /* TARJETA */
+      .ticket {
+      width: 420px;
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      }
+
+      /* HEADER */
+      .ticket-header {
+      text-align: center;
+      margin-bottom: 20px;
+      }
+
+      .ticket-header h2 {
+      color: var(--verde5);
+      }
+
+      .ticket-header p {
+      font-size: 13px;
+      color: #666;
+      }
+
+      /* INFO */
+      .info {
+      background: #e8f5e9;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      }
+
+      /* CAMPOS */
+      .field {
+      margin-bottom: 18px;
+      }
+
+      .field label {
+      font-size: 13px;
+      color: #333;
+      }
+
+      .field input,
+      .field textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s;
+      }
+
+      .field input:focus,
+      .field textarea:focus {
+      border-color: var(--verde3);
+      box-shadow: 0 0 5px rgba(76,175,80,0.4);
+      }
+
+      .field textarea {
+      resize: none;
+      }
+
+      /* BOTONES */
+      .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      }
+
+      .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+      }
+
+      .btn-enviar {
+      background: var(--verde4);
+      color: white;
+      }
+
+      .btn-enviar:hover {
+      background: var(--verde5);
+      transform: translateY(-1px);
+      }
+
+      .btn-cancelar {
+      background: #0d3b2e;
+      color: white;
+      }
+
+      .btn-cancelar:hover {
+      background: #145c43;
+      transform: translateY(-1px);
+      }
+
+  body
+    form.ticket(action="/tickets", method="POST", onsubmit="return confirmarEnvio()")
+      .ticket-header
+        h2 SYSTEM TICKETS
+        p Formulario de solicitud
+
+      // INFO AUTOMÁTICA
+      .info
+        i.bi.bi-info-circle.me-1
+        strong Departamento:
+        |  Mantenimiento
+        br
+        strong Fecha:
+        span#fecha
+        br
+        strong Hora:
+        span#hora
+
+      // INPUT HIDDEN
+      input(type="hidden", name="departamento", value="Mantenimiento")
+
+      .field
+        label Descripción del problema
+        textarea(name="descripcion", rows="4", required)
+
+      .field
+        label Ubicación (edificio, aula, etc.)
+        input(type="text", name="ubicacion", required)
+
+      .buttons
+        button.btn.btn-cancelar(type="button", onclick="window.history.back()")
+          i.bi.bi-arrow-left.me-1
+          | Regresar
+
+        button.btn.btn-enviar(type="submit")
+          i.bi.bi-send.me-1
+          | Enviar Ticket
+
+    script.
+      const fecha = new Date();
+
+      document.getElementById("fecha").innerText =
+      fecha.toLocaleDateString();
+
+      document.getElementById("hora").innerText =
+      fecha.toLocaleTimeString();
+
+      function confirmarEnvio() {
+      return confirm("¿Estás seguro de enviar la solicitud?");
+      }
