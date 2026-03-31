@@ -11,7 +11,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-    res.render('index', { titulo: 'Mi Proyecto Express' });
+    res.render('inicioo', {
+        titulo: 'Mi Proyecto Express',
+        mensaje: 'Bienvenido a la página de inicioo'
+    });
 });
 
 app.use(router);
