@@ -10,6 +10,10 @@ app.set('views', path.join(__dirname, 'views'));
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Necesario para req.body en POST (JSON y formularios)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', (req, res) => {
     res.render('inicioo', {
         titulo: 'Mi Proyecto Express',

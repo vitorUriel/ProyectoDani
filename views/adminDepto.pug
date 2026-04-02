@@ -134,6 +134,39 @@ html(lang="es")
       tr:hover {
       background: #f9f9f9;
       }
+      
+      .acciones-ticket {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      }
+      
+      @media print {
+      body {
+      background: white !important;
+      }
+      .sidebar {
+      display: none !important;
+      }
+      .main {
+      margin-left: 0 !important;
+      padding: 16px !important;
+      width: 100% !important;
+      }
+      .header {
+      color: #000 !important;
+      }
+      .table-container {
+      box-shadow: none !important;
+      }
+      tr.fila-oculta-print {
+      display: none !important;
+      }
+      .acciones-ticket .btn {
+      display: none !important;
+      }
+      }
   body
     // SIDEBAR
     .sidebar
@@ -161,44 +194,67 @@ html(lang="es")
         table
           tr
             th ID
-            th Descripción
             th Ubicación
+            th Descripción
             th Estado
             th Prioridad
             th Acciones
-          tr
-            td 1
-            td Fuga de agua
-            td Aula 3
-            td
-              select
-                option Pendiente
-                option En proceso
-                option Terminado
-            td
-              select
-                option Baja
-                option Media
-                option Alta
-            td
-              button.btn.btn-print(onclick="window.print()")
-                i.bi.bi-printer
-                | Imprimir
-          tr
-            td 2
-            td Puerta rota
-            td Oficina
-            td
-              select
-                option Pendiente
-                option(selected) En proceso
-                option Terminado
-            td
-              select
-                option Baja
-                option(selected) Media
-                option Alta
-            td
-              button.btn.btn-print(onclick="window.print()")
-                i.bi.bi-printer
-                | Imprimir
+          
+          each ticket in tickets || []
+            tr.ticket-fila(data-ticket-id=ticket.id)
+              td= ticket.id
+              td= ticket.ubicacion
+              td= ticket.descripcion
+              td
+                select(id=`estado-${ticket.id}`)
+                  option(value="Pendiente", selected=ticket.estado === 'Pendiente') Pendiente
+                  option(value="En proceso", selected=ticket.estado === 'En proceso') En proceso
+                  option(value="Terminado", selected=ticket.estado === 'Terminado') Terminado
+              td
+                select(id=`prioridad-${ticket.id}`)
+                  option(value="Baja", selected=ticket.prioridad === 'Baja') Baja
+                  option(value="Media", selected=ticket.prioridad === 'Media') Media
+                  option(value="Alta", selected=ticket.prioridad === 'Alta') Alta
+              td
+                .acciones-ticket
+                  button.btn.btn-print(type="button", onclick=`guardarCambios(${ticket.id})`)
+                    i.bi.bi-save
+                    | Guardar
+                  button.btn.btn-print(type="button", onclick=`imprimirTicket(${ticket.id})`)
+                    i.bi.bi-printer
+                    | Imprimir
+          else
+            tr
+              td(colspan="6", style="text-align: center; padding: 20px;") No hay tickets asignados a este departamento aún.
+
+      //- SCRIPT DE JAVASCRIPT AL FINAL DE TU PUG
+      script.
+        function imprimirTicket(id) {
+          document.querySelectorAll('tr.ticket-fila').forEach(function (tr) {
+            if (String(tr.getAttribute('data-ticket-id')) !== String(id)) {
+              tr.classList.add('fila-oculta-print');
+            }
+          });
+          window.print();
+          document.querySelectorAll('tr.fila-oculta-print').forEach(function (tr) {
+            tr.classList.remove('fila-oculta-print');
+          });
+        }
+        function guardarCambios(id) {
+          const estado = document.getElementById(`estado-${id}`).value;
+          const prioridad = document.getElementById(`prioridad-${id}`).value;
+          fetch('/actualizarTicket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, estado, prioridad })
+          })
+          .then(async (response) => {
+            const data = await response.json().catch(() => ({}));
+            if (response.ok && data.ok !== false) {
+              alert('Ticket actualizado correctamente.');
+            } else {
+              alert(data.error || 'No se pudo guardar el cambio.');
+            }
+          })
+          .catch(() => alert('Error de red al contactar el servidor.'));
+        }

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const ticketController = require('../controllers/ticketcontroller');
 
 router.get('/', (req, res) => {
     const mensaje = 'Bienvenido a la página de inicioo';
@@ -31,11 +32,9 @@ router.get('/ticketUsuario', (req, res) => {
     res.render('ticketUsuario',{mensaje, titulo});
 });
 
-router.get('/adminDepto', (req, res) => {
-    const mensaje = 'Bienvenido a la página de adminDepto';
-    const titulo = 'adminDepto';
-    res.render('adminDepto',{mensaje, titulo});
-});
+router.get('/adminDepto', ticketController.mostrarAdminDepto);
+
+router.post('/actualizarTicket', ticketController.actualizarTicket);
 
 router.get('/reporteMensu', (req, res) => {
     const mensaje = 'Bienvenido a la página de reporteMensu';
