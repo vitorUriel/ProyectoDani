@@ -167,41 +167,4 @@ html(lang="es")
           tr
             td Soporte
             td 25
-      // GRAFICA
-      .card
-        h2 Gráfica
-        canvas#grafica
-    script.
-      const ctx = document.getElementById('grafica');
       
-      new Chart(ctx, {
-      type: 'bar',
-      data: {
-      labels: ['Mantenimiento', 'Jardinería', 'Limpieza', 'Soporte'],
-      datasets: [{
-      label: 'Solicitudes',
-      data: [20, 10, 15, 25],
-      backgroundColor: [
-      '#4DA768',
-      '#73C883',
-      '#2E874E',
-      '#006633'
-      ],
-      borderRadius: 8
-      }]
-      },
-      options: {
-      plugins: {
-      legend: {
-      labels: {
-      color: "#333"
-      }
-      }
-      },
-      scales: {
-      y: {
-      beginAtZero: true
-      }
-      }
-      }
-      });
