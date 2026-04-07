@@ -28,7 +28,6 @@ html(lang="es")
       background: linear-gradient(135deg, #4CAF50, #81C784);
       }
       
-      /* SIDEBAR */
       .sidebar {
       width: 250px;
       min-height: 100vh;
@@ -56,14 +55,12 @@ html(lang="es")
       color: white;
       }
       
-      /* MAIN */
       .main {
       margin-left: 260px;
       padding: 30px;
       width: 100%;
       }
       
-      /* HEADER */
       .header {
       color: white;
       margin-bottom: 20px;
@@ -73,7 +70,6 @@ html(lang="es")
       font-size: 2.2rem;
       }
       
-      /* TARJETAS */
       .card {
       background: white;
       padding: 20px;
@@ -82,7 +78,6 @@ html(lang="es")
       margin-top: 20px;
       }
       
-      /* FILTRO */
       .filtro {
       display: flex;
       align-items: center;
@@ -100,7 +95,6 @@ html(lang="es")
       outline: none;
       }
       
-      /* TABLA */
       table {
       width: 100%;
       border-collapse: collapse;
@@ -122,13 +116,11 @@ html(lang="es")
       background: #f9f9f9;
       }
       
-      /* TITULOS */
       h2 {
       margin-bottom: 10px;
       color: var(--verde5);
       }
   body
-    // SIDEBAR
     .sidebar
       h2 ADMIN DEPTO
       a(href="/adminGeneral")
@@ -137,18 +129,15 @@ html(lang="es")
       a(href="/login")
         i.bi.bi-box-arrow-right
         | Cerrar sesión
-    // CONTENIDO
     .main
       .header
         h1 Reporte Mensual
         p Solicitudes por departamento
-      // FILTRO
       .card
         .filtro
           i.bi.bi-calendar
           label Seleccionar mes:
           input(type="month")
-      // TABLA
       .card
         h2 Resumen
         table

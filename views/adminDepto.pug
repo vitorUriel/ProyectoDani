@@ -28,7 +28,6 @@ html(lang="es")
       background: linear-gradient(135deg, #4CAF50, #81C784);
       }
       
-      /* SIDEBAR */
       .sidebar {
       width: 250px;
       min-height: 100vh;
@@ -56,14 +55,12 @@ html(lang="es")
       color: white;
       }
       
-      /* MAIN */
       .main {
       margin-left: 260px;
       padding: 30px;
       width: 100%;
       }
       
-      /* HEADER */
       .header {
       color: white;
       margin-bottom: 20px;
@@ -73,7 +70,6 @@ html(lang="es")
       font-size: 2.2rem;
       }
       
-      /* TABLA */
       .table-container {
       margin-top: 20px;
       background: white;
@@ -98,7 +94,6 @@ html(lang="es")
       border-bottom: 1px solid #eee;
       }
       
-      /* SELECTS */
       select {
       padding: 6px;
       border-radius: 6px;
@@ -110,7 +105,6 @@ html(lang="es")
       border-color: var(--verde3);
       }
       
-      /* BOTONES */
       .btn {
       padding: 6px 12px;
       border: none;
@@ -130,7 +124,6 @@ html(lang="es")
       transform: translateY(-1px);
       }
       
-      /* FILAS HOVER */
       tr:hover {
       background: #f9f9f9;
       }
@@ -168,19 +161,16 @@ html(lang="es")
       }
       }
   body
-    // SIDEBAR
     .sidebar
       h2 ADMIN DEPTO MANTENIMIENTO
 
       a(href="/login")
         i.bi.bi-box-arrow-right
         | Cerrar sesión
-    // CONTENIDO
     .main
       .header
         h1 Departamento: Mantenimiento
         p Gestión de tickets
-      // TABLA
       .table-container
         h2 Solicitudes recibidas
         table
@@ -219,7 +209,6 @@ html(lang="es")
             tr
               td(colspan="6", style="text-align: center; padding: 20px;") No hay tickets asignados a este departamento aún.
 
-      //- SCRIPT DE JAVASCRIPT AL FINAL DE TU PUG
       script.
         function imprimirTicket(id) {
           document.querySelectorAll('tr.ticket-fila').forEach(function (tr) {
