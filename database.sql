@@ -9,13 +9,13 @@ USE sistema_tickets;
 -- 2. Tabla de Roles
 CREATE TABLE roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL -- Ej: 'Admin General', 'Admin Area', 'Usuario'
+    nombre VARCHAR(50) NOT NULL -- Ej: 'Abmin General', 'Admin Area', 'Usuario'
 );
 
 -- 3. Tabla de Departamentos
 CREATE TABLE departamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL -- Ej: 'Soporte', 'Mantenimiento', etc.
+    nombre VARCHAR(50) NOT NULL -- Ej: 'Soporte', 'Manternimiento', etc.
 );
 
 -- 4. Tabla de Usuarios
@@ -44,7 +44,7 @@ CREATE TABLE tickets (
     FOREIGN KEY (departamento_id) REFERENCES departamentos(id)
 );
 
--- INSERCIONES BÁSICAS (Para que todos tengan datos con qué probar)
+-- INSERCIONES BASICAS (Para que todos tengan datos con que probar)
 INSERT INTO roles (nombre) VALUES ('Admin General'), ('Admin Area'), ('Usuario');
 INSERT INTO departamentos (nombre) VALUES ('Mantenimiento'), ('Limpieza'), ('Jardinería'), ('Soporte');
 

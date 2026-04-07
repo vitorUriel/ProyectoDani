@@ -1,7 +1,7 @@
-// Importamos la base de datos AQUÍ en el controlador
+
 const db = require('../config/database');
 
-// 1. Función para mostrar la vista del Admin del Depto
+
 const mostrarAdminDepto = async (req, res) => {
     const mensaje = 'Bienvenido a la página de adminDepto';
     const titulo = 'adminDepto';
@@ -12,18 +12,16 @@ const mostrarAdminDepto = async (req, res) => {
             `SELECT id, descripcion, ubicacion, estado, prioridad
              FROM tickets
              WHERE departamento_id = ?`,
-            [1] // Más adelante este '1' lo tomaremos de la sesión del usuario
+            [1] 
         );
         tickets = rows;
     } catch (err) {
         console.error(err);
     }
     
-    // Renderizamos la vista enviando los datos
     res.render('adminDepto', { mensaje, titulo, tickets });
 };
 
-// 2. Función para guardar los cambios (el POST) — body viene de fetch JSON gracias a express.json()
 const actualizarTicket = async (req, res) => {
     const id = Number(req.body.id);
     const { estado, prioridad } = req.body;
@@ -47,7 +45,6 @@ const actualizarTicket = async (req, res) => {
     }
 };
 
-// Exportamos las funciones para que las rutas las puedan usar
 module.exports = {
     mostrarAdminDepto,
     actualizarTicket

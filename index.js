@@ -3,14 +3,11 @@ const app = express();
 const router = require('./routes/routes');
 const path = require('path');
 
-// Configurar Pug
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-// Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Necesario para req.body en POST (JSON y formularios)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
