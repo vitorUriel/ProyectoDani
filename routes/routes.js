@@ -54,6 +54,24 @@ router.get('/altasUsuario', (req, res) => {
     res.render('altasUsuario',{mensaje, titulo});
 });
 
+router.get('/adminJardineria', (req, res) => {
+    const mensaje = 'Bienvenido a la página de adminJardineria';
+    const titulo = 'adminJardineria';
+    res.render('adminJardineria',{mensaje, titulo});
+});
+
+router.get('/adminLimpieza', (req, res) => {
+    const mensaje = 'Bienvenido a la página de adminLimpieza';
+    const titulo = 'adminLimpieza';
+    res.render('adminLimpieza',{mensaje, titulo});
+});
+
+router.get('/adminSoporte', (req, res) => {
+    const mensaje = 'Bienvenido a la página de adminSoporte';
+    const titulo = 'adminSoporte';
+    res.render('adminSoporte',{mensaje, titulo});
+});
+
 module.exports = router;
 
 
