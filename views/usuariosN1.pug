@@ -138,15 +138,6 @@ html(lang="es")
       h4.mb-3 SYSTEM TICKETS
       p.small Gestión eficiente
       nav
-        a(href="#")
-          i.bi.bi-house-door-fill.me-2
-          | Inicio
-        a(href="#")
-          i.bi.bi-plus-circle.me-2
-          | Crear Ticket
-        a(href="#")
-          i.bi.bi-list-check.me-2
-          | Mis Solicitudes
         a(href="/login")
           i.bi.bi-box-arrow-right.me-2
           | Cerrar sesión
@@ -157,18 +148,21 @@ html(lang="es")
         h1.title-main Panel de Usuario
         p.subtitle Gestión de solicitudes
 
-      // DEPARTAMENTOS
+      // DEPARTAMENTOS (AQUI SOLO SE AGREGÓ onclick)
       .departamentos
-        .dep-card
+        .dep-card(onclick="window.location.href='/ticketUsuario'")
           i.bi.bi-tools.fs-2.text-success
           h6.mt-2 Mantenimiento
-        .dep-card
+
+        .dep-card(onclick="window.location.href='/ticketUsuario'")
           i.bi.bi-tree.fs-2.text-success
           h6.mt-2 Jardinería
-        .dep-card
+
+        .dep-card(onclick="window.location.href='/ticketUsuario'")
           i.bi.bi-bucket.fs-2.text-success
           h6.mt-2 Limpieza
-        .dep-card
+
+        .dep-card(onclick="window.location.href='/ticketUsuario'")
           i.bi.bi-laptop.fs-2.text-success
           h6.mt-2 Soporte
 
