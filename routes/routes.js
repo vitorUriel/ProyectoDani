@@ -72,6 +72,12 @@ router.get('/adminSoporte', (req, res) => {
     res.render('adminSoporte',{mensaje, titulo});
 });
 
+router.get('/ticketImprimir', (req, res) => {
+    const mensaje = 'Bienvenido a la página de ticketImprimir';
+    const titulo = 'ticketImprimir';
+    res.render('ticketImprimir',{mensaje, titulo});
+});
+
 module.exports = router;
 
 

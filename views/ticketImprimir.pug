@@ -1,0 +1,149 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Ticket
+
+    style.
+      body {
+        background: #e5e5e5;
+        font-family: monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+        position: relative;
+      }
+
+      /* BOTON REGRESAR */
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .back-btn:hover {
+        background: #2e7d32;
+      }
+
+      .ticket {
+        background: #f9f9f9;
+        padding: 25px;
+        border: 2px dashed #555;
+        width: 320px;
+        text-align: left;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+
+      .ticket h2 {
+        text-align: center;
+        margin-bottom: 15px;
+      }
+
+      .line {
+        border-top: 1px dashed #777;
+        margin: 10px 0;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+      }
+
+      .center {
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      /* FIRMA */
+      .firma {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .firma-linea {
+        border-top: 1px solid #000;
+        margin-top: 40px;
+        margin-bottom: 5px;
+      }
+
+      .firma-texto {
+        font-size: 12px;
+        color: #333;
+      }
+
+      /* BOTON IMPRIMIR */
+      .btn {
+        margin-top: 20px;
+        padding: 12px 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 320px;
+        transition: 0.3s;
+      }
+
+      .btn:hover {
+        background: #2e7d32;
+      }
+
+  body
+
+    button.back-btn(onclick="window.location.href='/adminDepto'") ← Regresar
+
+    .ticket
+      h2 SYSTEM TICKETS
+
+      p Fecha: 
+        span#fecha
+      p Hora: 
+        span#hora
+
+      .line
+
+      p
+        strong Ubicación:
+      p ----------------------
+
+      p
+        strong Descripción:
+      p ----------------------
+
+      .line
+
+      // FIRMA
+      .firma
+        .firma-linea
+        p.firma-texto Firma de conformidad
+
+        p.firma-texto 
+          | Conste que el trabajo fue realizado correctamente
+
+      .line
+
+      .center
+        p ¡Gracias por su solicitud!
+
+    button.btn(onclick="window.print()") Imprimir Ticket
+
+    script.
+      const fecha = new Date();
+
+      document.getElementById("fecha").innerText =
+        fecha.toLocaleDateString();
+
+      document.getElementById("hora").innerText =
+        fecha.toLocaleTimeString();
