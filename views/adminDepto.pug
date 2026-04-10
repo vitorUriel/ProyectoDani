@@ -202,25 +202,15 @@ html(lang="es")
                   button.btn.btn-print(type="button", onclick=`guardarCambios(${ticket.id})`)
                     i.bi.bi-save
                     | Guardar
-                  button.btn.btn-print(type="button", onclick=`imprimirTicket(${ticket.id})`)
+                  a.button.btn.btn-print(type="button",href="/ticketImprimir")
+                  
                     i.bi.bi-printer
-                    | Imprimir
+                    | Ver más
           else
             tr
               td(colspan="6", style="text-align: center; padding: 20px;") No hay tickets asignados a este departamento aún.
 
       script.
-        function imprimirTicket(id) {
-          document.querySelectorAll('tr.ticket-fila').forEach(function (tr) {
-            if (String(tr.getAttribute('data-ticket-id')) !== String(id)) {
-              tr.classList.add('fila-oculta-print');
-            }
-          });
-          window.print();
-          document.querySelectorAll('tr.fila-oculta-print').forEach(function (tr) {
-            tr.classList.remove('fila-oculta-print');
-          });
-        }
         function guardarCambios(id) {
           const estado = document.getElementById(`estado-${id}`).value;
           const prioridad = document.getElementById(`prioridad-${id}`).value;
