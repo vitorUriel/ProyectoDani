@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ticketController = require('../controllers/ticketcontroller');
+const altascontroller = require('../controllers/altascontroller');
 
 router.get('/', (req, res) => {
     const mensaje = 'Bienvenido a la página de inicioo';
@@ -48,6 +49,10 @@ router.get('/adminGeneral', (req, res) => {
     res.render('adminGeneral',{mensaje, titulo});
 });
 
+//altasUsuarios
+router.get('/altasUsuario', altascontroller.mostrarVistaAltas);
+router.post('/usuarios', altascontroller.crearUsuario);
+
 router.get('/altasUsuario', (req, res) => {
     const mensaje = 'Bienvenido a la página de altasUsuario';
     const titulo = 'altasUsuario';
@@ -78,6 +83,6 @@ router.get('/ticketImprimir', (req, res) => {
     res.render('ticketImprimir',{mensaje, titulo});
 });
 
-module.exports = router;
 
+module.exports = router;
 

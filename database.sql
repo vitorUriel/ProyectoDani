@@ -56,3 +56,13 @@ INSERT INTO tickets (descripcion, ubicacion, estado, prioridad, usuario_id, depa
 VALUES 
 ('Fuga de agua en el lavabo', 'Baños principales', 'Pendiente', 'Alta', 1, 1),
 ('Proyector no enciende', 'Aula 3', 'En proceso', 'Media', 1, 1);
+
+INSERT INTO departamentos (nombre) 
+VALUES 
+(AdminGeneral),
+(Mantenimiento),
+(Limpieza),
+(Jardinería),
+(Soporte);
+
+

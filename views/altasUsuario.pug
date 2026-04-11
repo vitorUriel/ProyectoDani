@@ -122,7 +122,8 @@ html(lang="es")
       }
 
   body
-    form.form-container(action="/usuarios", method="POST")
+    // 1. Agregamos el ID al form y quitamos el action/method
+    form.form-container#formAlta
       h2
         i.bi.bi-person-plus-fill
         |  Crear Usuario
@@ -142,25 +143,24 @@ html(lang="es")
         i.bi.bi-lock
         input(type="password", name="password", required)
 
+  
       .field
-        label Nivel
-        select(name="nivel")
-          option(value="1") Usuario
-          option(value="2") Admin General
-          option(value="3") Admin Mantenimiento
-          option(value="4") Admin Jardinería
-          option(value="5") Admin Limpieza
-          option(value="6") Admin Soporte
+        label Nivel de Acceso
+        // Cambiamos el name a rol_id para que sea directo
+        select(name="rol_id", required)
+          option(value="") Selecciona un nivel...
+          option(value="3") Usuario Normal
+          option(value="2") Administrador de Departamento
+          option(value="1") Administrador General
 
       .field
         label Departamento
-        select(name="departamento")
+        select(name="departamento_id", required)
           option(value="") N/A
-          option(value="Administrador") Administrador
-          option(value="Mantenimiento") Mantenimiento
-          option(value="Jardinería") Jardinería
-          option(value="Limpieza") Limpieza
-          option(value="Soporte") Soporte
+          option(value="2") Mantenimiento
+          option(value="3") Jardinería
+          option(value="4") Limpieza
+          option(value="5") Soporte
 
       button.btn(type="submit")
         i.bi.bi-check-circle
@@ -169,3 +169,53 @@ html(lang="es")
       button.back-btn(type="button", onclick="window.history.back()")
         i.bi.bi-arrow-left
         |  Regresar
+
+        // Va hasta el final del archivo
+script.
+  document.getElementById('formAlta').addEventListener('submit', async (e) => {
+    // 1. ESTO ES LA MAGIA: Detiene el viaje a la otra página
+    e.preventDefault(); 
+
+    // 2. Recolectamos los datos que escribió el usuario
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      // 3. Enviamos los datos al servidor de forma "invisible"
+      const response = await fetch('/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      // 4. Leemos lo que nos contestó el servidor
+      const result = await response.json();
+
+      if (result.success) {
+        alert(result.message); // Alerta de éxito
+        e.target.reset();      // Limpia los campos del formulario para uno nuevo
+        // window.location.href = '/adminGeneral'; // Descomenta esto si quieres mandarlo a otra pantalla al terminar
+      } else {
+        alert(result.message); // Alerta de error (ej: correo duplicado)
+      }
+
+    } catch (error) {
+      alert('Error de conexión con el servidor.');
+    }
+  });
+
+  const selectNivel = document.querySelector('select[name="rol_id"]');
+      const selectDepto = document.querySelector('select[name="departamento_id"]');
+
+      selectNivel.addEventListener('change', (e) => {
+        const rolSeleccionado = e.target.value;
+        
+        // Si es Admin General (1) o Usuario (3), bloqueamos el departamento
+        if (rolSeleccionado === '1' || rolSeleccionado === '3') {
+          selectDepto.value = ""; // Lo regresamos a la opción vacía
+          selectDepto.disabled = true; // Lo bloqueamos visualmente
+        } else {
+          // Si es Admin de Área (2), lo volvemos a habilitar
+          selectDepto.disabled = false;
+        }
+        });
