@@ -28,6 +28,25 @@ const mostrarAdminDepto = async (req, res) => {
     }
 };
 
+const mostrarTicketUsuario = async (req, res) => {
+    const user = req.session.usuario;
+    if (!user || user.rol_id !== 3) return res.redirect('/login');
+
+    try {
+        // Buscamos SOLO los tickets que creó ESTE usuario en particular
+        // (Asegúrate de que tu tabla 'tickets' tenga una columna como 'usuario_id')
+        const [misTickets] = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
+
+        res.render('ticketUsuario', { 
+            usuarioNombre: user.nombre,
+            tickets: misTickets 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al cargar el panel de usuario");
+    }
+};
+
 const actualizarTicket = async (req, res) => {
     const id = Number(req.body.id);
     const { estado, prioridad } = req.body;
@@ -53,5 +72,6 @@ const actualizarTicket = async (req, res) => {
 
 module.exports = {
     mostrarAdminDepto,
-    actualizarTicket
+    actualizarTicket,
+    mostrarTicketUsuario
 };

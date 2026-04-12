@@ -5,148 +5,160 @@ html(lang="es")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Crear Ticket
 
-    
-    link(href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css", rel="stylesheet")
+    link(
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css",
+      rel="stylesheet"
+    )
 
     style.
       :root {
-      --verde1: #99E89D;
-      --verde2: #73C883;
-      --verde3: #4DA768;
-      --verde4: #2E874E;
-      --verde5: #006633;
-      --blanco: #ffffff;
-      --gris: #f4f4f4;
+        --verde1: #99E89D;
+        --verde2: #73C883;
+        --verde3: #4DA768;
+        --verde4: #2E874E;
+        --verde5: #006633;
+        --blanco: #ffffff;
+        --gris: #f4f4f4;
       }
 
       * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
       }
 
       body {
-      background: linear-gradient(135deg, #4CAF50, #81C784);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+        background: linear-gradient(135deg, #4CAF50, #81C784);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       .ticket {
-      width: 420px;
-      background: white;
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        width: 420px;
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       }
 
       .ticket-header {
-      text-align: center;
-      margin-bottom: 20px;
+        text-align: center;
+        margin-bottom: 20px;
       }
 
       .ticket-header h2 {
-      color: var(--verde5);
+        color: var(--verde5);
       }
 
       .ticket-header p {
-      font-size: 13px;
-      color: #666;
+        font-size: 13px;
+        color: #666;
       }
 
       .info {
-      background: #e8f5e9;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 13px;
+        background: #e8f5e9;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 13px;
       }
 
       .field {
-      margin-bottom: 18px;
+        margin-bottom: 18px;
       }
 
       .field label {
-      font-size: 13px;
-      color: #333;
+        font-size: 13px;
+        color: #333;
       }
 
       .field input,
-      .field textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      outline: none;
-      transition: 0.3s;
+      .field textarea,
+      .field select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.3s;
       }
 
       .field input:focus,
-      .field textarea:focus {
-      border-color: var(--verde3);
-      box-shadow: 0 0 5px rgba(76,175,80,0.4);
+      .field textarea:focus,
+      .field select:focus {
+        border-color: var(--verde3);
+        box-shadow: 0 0 5px rgba(76,175,80,0.4);
       }
 
       .field textarea {
-      resize: none;
+        resize: none;
       }
 
       .buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
       }
 
       .btn {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
       }
 
       .btn-enviar {
-      background: var(--verde4);
-      color: white;
+        background: var(--verde4);
+        color: white;
       }
 
       .btn-enviar:hover {
-      background: var(--verde5);
-      transform: translateY(-1px);
+        background: var(--verde5);
+        transform: translateY(-1px);
       }
 
       .btn-cancelar {
-      background: #0d3b2e;
-      color: white;
+        background: #0d3b2e;
+        color: white;
       }
 
       .btn-cancelar:hover {
-      background: #145c43;
-      transform: translateY(-1px);
+        background: #145c43;
+        transform: translateY(-1px);
       }
 
   body
-    form.ticket(action="/tickets", method="POST", onsubmit="return confirmarEnvio()")
+    form.ticket(
+      action="/tickets",
+      method="POST",
+      onsubmit="return confirmarEnvio()"
+    )
       .ticket-header
         h2 SYSTEM TICKETS
         p Formulario de solicitud
 
       .info
         i.bi.bi-info-circle.me-1
-        strong Departamento:
-        |  Mantenimiento
-        br
-        strong Fecha:
+        strong Fecha de solicitud:
         span#fecha
         br
         strong Hora:
         span#hora
 
-      input(type="hidden", name="departamento", value="Mantenimiento")
+      .field
+        label ¿A qué departamento va dirigido?
+        select(name="departamento_id", required, style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px;")
+          option(value="") Selecciona una opción...
+          if departamentos
+            each depto in departamentos
+              //- Comparamos el id del depto con el deptoSeleccionado para agregar el atributo "selected"
+              option(value=depto.id, selected=(depto.id == deptoSeleccionado))= depto.nombre
 
       .field
         label Descripción del problema
@@ -157,7 +169,10 @@ html(lang="es")
         input(type="text", name="ubicacion", required)
 
       .buttons
-        button.btn.btn-cancelar(type="button", onclick="window.history.back()")
+        button.btn.btn-cancelar(
+          type="button",
+          onclick="window.history.back()"
+        )
           i.bi.bi-arrow-left.me-1
           | Regresar
 
@@ -169,11 +184,11 @@ html(lang="es")
       const fecha = new Date();
 
       document.getElementById("fecha").innerText =
-      fecha.toLocaleDateString();
+        fecha.toLocaleDateString();
 
       document.getElementById("hora").innerText =
-      fecha.toLocaleTimeString();
+        fecha.toLocaleTimeString();
 
       function confirmarEnvio() {
-      return confirm("¿Estás seguro de enviar la solicitud?");
+        return confirm("¿Estás seguro de enviar la solicitud?");
       }

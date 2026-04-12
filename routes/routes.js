@@ -26,16 +26,76 @@ router.get('/login', (req, res) => {
 router.post('/login', authcontroller.login);
 
 
-router.get('/usuariosN1', (req, res) => {
-    const mensaje = 'Bienvenido a la página de usuariosN1';
-    const titulo = 'Usuarios';
-    res.render('usuariosN1',{mensaje, titulo});
+
+// NUEVA RUTA DINÁMICA
+router.get('/usuariosN1', async (req, res) => {
+    const user = req.session.usuario;
+    
+    // Verificamos que el usuario esté logueado
+    if (!user) return res.redirect('/login');
+
+    try {
+        // 1. Buscamos en la base de datos SOLO los tickets de este usuario
+        const [misTickets] = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
+
+        // 2. Renderizamos la vista y LE PASAMOS los tickets
+        res.render('usuariosN1', { 
+            titulo: 'Panel Usuario',
+            usuarioNombre: user.nombre,
+            tickets: misTickets // <--- ¡ESTA ES LA LÍNEA MÁGICA QUE QUITA EL ERROR!
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al cargar el panel de usuario");
+    }
 });
 
-router.get('/ticketUsuario', (req, res) => {
-    const mensaje = 'Bienvenido a la página de ticketUsuario';
-    const titulo = 'ticketUsuario';
-    res.render('ticketUsuario',{mensaje, titulo});
+router.get('/ticketUsuario', async (req, res) => {
+    const user = req.session.usuario;
+    if (!user || user.rol_id !== 3) return res.redirect('/login');
+
+    try {
+        // 1. Atrapamos el ID que viene en la URL (si no viene nada, queda vacío)
+        const deptoPreseleccionado = req.query.depto || "";
+
+        // 2. Traemos los departamentos de la base de datos
+        const [departamentos] = await db.query('SELECT id, nombre FROM departamentos');
+
+        // 3. Renderizamos la vista y le pasamos todo
+        res.render('ticketUsuario', { 
+            departamentos: departamentos,
+            deptoSeleccionado: deptoPreseleccionado // <--- Pasamos la variable nueva
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al cargar el formulario");
+    }
+});
+
+// RUTA POST: Atrapa los datos del formulario y los guarda en la Base de Datos
+router.post('/tickets', async (req, res) => {
+    // 1. Verificamos quién está creando el ticket
+    const user = req.session.usuario;
+    if (!user) return res.redirect('/login');
+
+    // 2. Extraemos lo que el usuario escribió en el formulario
+    const { departamento_id, descripcion, ubicacion } = req.body;
+
+    try {
+        // 3. Insertamos el nuevo registro en la tabla de tickets
+        // Nota: Le asignamos el estado 'Pendiente' por defecto al crearlo
+        await db.query(
+            'INSERT INTO tickets (usuario_id, departamento_id, descripcion, ubicacion, estado) VALUES (?, ?, ?, ?, ?)',
+            [user.id, departamento_id, descripcion, ubicacion, 'Pendiente']
+        );
+
+        // 4. Si todo sale bien, lo regresamos a su pantalla principal
+        res.redirect('/usuariosN1');
+        
+    } catch (error) {
+        console.error("Error al guardar el ticket:", error);
+        res.status(500).send("Hubo un error al intentar crear el ticket.");
+    }
 });
 
 router.get('/adminDepto', ticketController.mostrarAdminDepto);
@@ -54,29 +114,34 @@ router.get('/adminGeneral', (req, res) => {
     res.render('adminGeneral',{mensaje, titulo});
 });
 
-router.get('/adminDepto', async (req, res) => {
-    // 1. Verificamos que sea un Admin de Área (rol_id 2)
+router.get('/usuariosN1', async (req, res) => {
     const user = req.session.usuario;
-    if (!user || user.rol_id !== 2) {
-        return res.redirect('/login');
-    }
+    if (!user) return res.redirect('/login');
 
     try {
-        // 2. Buscamos el nombre del departamento
-        const [depto] = await db.query('SELECT nombre FROM departamentos WHERE id = ?', [user.departamento_id]);
+        // Hacemos la consulta
+        const resultado = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
         
-        // 3. Buscamos SOLO los tickets de SU departamento
-        const [tickets] = await db.query('SELECT * FROM tickets WHERE departamento_id = ?', [user.departamento_id]);
+        // Dependiendo de si usas mysql o mysql2, los datos vienen en el índice 0 o directo.
+        // Esta línea asegura que SIEMPRE saquemos el arreglo de tickets correctamente.
+        let misTickets = [];
+        if (Array.isArray(resultado[0])) {
+            misTickets = resultado[0]; // Para mysql2 (devuelve [rows, fields])
+        } else if (Array.isArray(resultado)) {
+            misTickets = resultado;    // Para otras configuraciones que devuelven directo los rows
+        }
 
-        // 4. Renderizamos la vista con los datos reales
-        res.render('adminDepto', { 
-            nombreDepto: depto[0].nombre,
+        // Imprimimos en consola para ver qué estamos mandando (te servirá para revisar)
+        console.log("Tickets encontrados para el usuario:", misTickets);
+
+        res.render('usuariosN1', { 
+            titulo: 'Panel Usuario',
             usuarioNombre: user.nombre,
-            tickets: tickets 
+            tickets: misTickets 
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Error al cargar el panel");
+        console.error("Error en la consulta:", error);
+        res.status(500).send("Error al cargar el panel de usuario");
     }
 });
 
@@ -90,23 +155,7 @@ router.get('/altasUsuario', (req, res) => {
     res.render('altasUsuario',{mensaje, titulo});
 });
 
-router.get('/adminJardineria', (req, res) => {
-    const mensaje = 'Bienvenido a la página de adminJardineria';
-    const titulo = 'adminJardineria';
-    res.render('adminJardineria',{mensaje, titulo});
-});
 
-router.get('/adminLimpieza', (req, res) => {
-    const mensaje = 'Bienvenido a la página de adminLimpieza';
-    const titulo = 'adminLimpieza';
-    res.render('adminLimpieza',{mensaje, titulo});
-});
-
-router.get('/adminSoporte', (req, res) => {
-    const mensaje = 'Bienvenido a la página de adminSoporte';
-    const titulo = 'adminSoporte';
-    res.render('adminSoporte',{mensaje, titulo});
-});
 
 router.get('/ticketImprimir', (req, res) => {
     const mensaje = 'Bienvenido a la página de ticketImprimir';
