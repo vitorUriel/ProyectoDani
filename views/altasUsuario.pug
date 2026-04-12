@@ -171,51 +171,85 @@ html(lang="es")
         |  Regresar
 
         // Va hasta el final del archivo
+//- 1. Importamos la librería de SweetAlert2
+script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
+
 script.
-  document.getElementById('formAlta').addEventListener('submit', async (e) => {
-    // 1. ESTO ES LA MAGIA: Detiene el viaje a la otra página
-    e.preventDefault(); 
+  // Lógica para bloquear/desbloquear el departamento
+  const selectNivel = document.querySelector('select[name="rol_id"]');
+  const selectDepto = document.querySelector('select[name="departamento_id"]');
 
-    // 2. Recolectamos los datos que escribió el usuario
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    try {
-      // 3. Enviamos los datos al servidor de forma "invisible"
-      const response = await fetch('/usuarios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      // 4. Leemos lo que nos contestó el servidor
-      const result = await response.json();
-
-      if (result.success) {
-        alert(result.message); // Alerta de éxito
-        e.target.reset();      // Limpia los campos del formulario para uno nuevo
-        // window.location.href = '/adminGeneral'; // Descomenta esto si quieres mandarlo a otra pantalla al terminar
-      } else {
-        alert(result.message); // Alerta de error (ej: correo duplicado)
-      }
-
-    } catch (error) {
-      alert('Error de conexión con el servidor.');
+  selectNivel.addEventListener('change', (e) => {
+    const rolSeleccionado = e.target.value;
+    if (rolSeleccionado === '1' || rolSeleccionado === '3') {
+      selectDepto.value = ""; 
+      selectDepto.disabled = true; 
+    } else {
+      selectDepto.disabled = false;
     }
   });
 
-  const selectNivel = document.querySelector('select[name="rol_id"]');
-      const selectDepto = document.querySelector('select[name="departamento_id"]');
+  // Lógica del formulario con SweetAlert2
+  document.getElementById('formAlta').addEventListener('submit', (e) => {
+    e.preventDefault(); 
 
-      selectNivel.addEventListener('change', (e) => {
-        const rolSeleccionado = e.target.value;
-        
-        // Si es Admin General (1) o Usuario (3), bloqueamos el departamento
-        if (rolSeleccionado === '1' || rolSeleccionado === '3') {
-          selectDepto.value = ""; // Lo regresamos a la opción vacía
-          selectDepto.disabled = true; // Lo bloqueamos visualmente
-        } else {
-          // Si es Admin de Área (2), lo volvemos a habilitar
-          selectDepto.disabled = false;
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    // 1. Preguntamos ANTES de enviar los datos al servidor
+    Swal.fire({
+      title: '¿Registrar nuevo usuario?',
+      text: "Verifica que el correo y el nivel de acceso sean correctos.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#2e7d32',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, registrar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      
+      // Si el administrador hizo clic en "Sí, registrar"
+      if (result.isConfirmed) {
+        try {
+          // 2. Enviamos los datos al servidor
+          const response = await fetch('/usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+
+          const resultData = await response.json();
+
+          // 3. Evaluamos la respuesta del servidor
+          if (resultData.success) {
+            // Alerta de ÉXITO
+            Swal.fire({
+              title: '¡Usuario Registrado!',
+              text: resultData.message || 'La cuenta ha sido creada exitosamente.',
+              icon: 'success',
+              confirmButtonColor: '#2e7d32'
+            });
+            e.target.reset(); // Limpia los campos del formulario
+            
+          } else {
+            // Alerta de ERROR (Ej: Correo duplicado)
+            Swal.fire({
+              title: 'Error al registrar',
+              text: resultData.message || 'Hubo un problema al crear el usuario.',
+              icon: 'error',
+              confirmButtonColor: '#d33'
+            });
+          }
+
+        } catch (error) {
+          // Alerta de ERROR DE CONEXIÓN
+          Swal.fire({
+            title: 'Error de conexión',
+            text: 'No se pudo contactar con el servidor.',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+          });
         }
-        });
+      }
+    });
+  });

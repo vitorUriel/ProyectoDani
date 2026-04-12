@@ -89,19 +89,16 @@ router.post('/tickets', async (req, res) => {
     const { departamento_id, descripcion, ubicacion } = req.body;
 
     try {
-        // 3. Insertamos el nuevo registro en la tabla de tickets
-        // Nota: Le asignamos el estado 'Pendiente' por defecto al crearlo
         await db.query(
             'INSERT INTO tickets (usuario_id, departamento_id, descripcion, ubicacion, estado) VALUES (?, ?, ?, ?, ?)',
             [user.id, departamento_id, descripcion, ubicacion, 'Pendiente']
         );
-
-        // 4. Si todo sale bien, lo regresamos a su pantalla principal
-        res.redirect('/usuariosN1');
+    
+        // Cambiamos el redirect para avisar que se envió con éxito
+        res.redirect('/usuariosN1?enviado=true'); 
         
     } catch (error) {
-        console.error("Error al guardar el ticket:", error);
-        res.status(500).send("Hubo un error al intentar crear el ticket.");
+        // ... manejo de error ...
     }
 });
 
@@ -109,10 +106,50 @@ router.get('/adminDepto', ticketController.mostrarAdminDepto);
 
 router.post('/actualizarTicket', ticketController.actualizarTicket);
 
-router.get('/reporteMensu', (req, res) => {
-    const mensaje = 'Bienvenido a la página de reporteMensu';
-    const titulo = 'reporteMensu';
-    res.render('reporteMensu',{mensaje, titulo});
+router.get('/reporteMensual', async (req, res) => {
+    const user = req.session.usuario;
+    if (!user) return res.redirect('/login'); // Opcional: Validar que sea admin
+
+    // 1. Tomamos el mes de la URL. Si no hay, calculamos el mes actual por defecto.
+    let mesSeleccionado = req.query.mes;
+    if (!mesSeleccionado) {
+        const hoy = new Date();
+        const año = hoy.getFullYear();
+        // Le sumamos 1 al mes porque en JavaScript enero es 0
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0'); 
+        mesSeleccionado = `${año}-${mes}`; // Queda en formato "YYYY-MM"
+    }
+
+    try {
+        // 2. Consulta SQL: Cuenta tickets por departamento en ese mes en específico.
+        // Usamos LEFT JOIN para que también salgan los departamentos con 0 tickets.
+        const query = `
+            SELECT d.nombre AS departamento, COUNT(t.id) AS total 
+            FROM departamentos d 
+            LEFT JOIN tickets t ON d.id = t.departamento_id 
+                 AND DATE_FORMAT(t.fecha_creacion, '%Y-%m') = ?
+            GROUP BY d.id, d.nombre
+        `;
+        
+        const resultado = await db.query(query, [mesSeleccionado]);
+        
+        // Ajuste dependiendo si usas mysql o mysql2
+        let estadisticas = [];
+        if (Array.isArray(resultado[0])) {
+            estadisticas = resultado[0];
+        } else if (Array.isArray(resultado)) {
+            estadisticas = resultado;
+        }
+
+        // 3. Renderizamos la vista y le pasamos los datos
+        res.render('reporteMensual', { 
+            estadisticas: estadisticas,
+            mesSeleccionado: mesSeleccionado // Lo pasamos para que el input mantenga su valor
+        });
+    } catch (error) {
+        console.error("Error al generar el reporte mensual:", error);
+        res.status(500).send("Error al generar el reporte");
+    }
 });
 
 router.get('/adminGeneral', (req, res) => {

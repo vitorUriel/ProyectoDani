@@ -180,15 +180,26 @@ html(lang="es")
           i.bi.bi-send.me-1
           | Enviar Ticket
 
+    script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
+
+    //- NOTA EL PUNTO DESPUÉS DE LA PALABRA SCRIPT. ES VITAL.
     script.
-      const fecha = new Date();
+      function confirmarEnvio(event) {
+        event.preventDefault(); // Detenemos el envío automático
 
-      document.getElementById("fecha").innerText =
-        fecha.toLocaleDateString();
-
-      document.getElementById("hora").innerText =
-        fecha.toLocaleTimeString();
-
-      function confirmarEnvio() {
-        return confirm("¿Estás seguro de enviar la solicitud?");
+        Swal.fire({
+          title: '¿Enviar solicitud?',
+          text: "Asegúrate de que la ubicación y descripción sean correctas.",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#4CAF50',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, enviar',
+          cancelButtonText: 'Revisar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Si confirma, enviamos el formulario manualmente
+            event.target.submit();
+          }
+        });
       }

@@ -194,3 +194,24 @@ html(lang="es")
           else
             tr
               td(colspan="5" style="text-align: center; padding: 20px;") No tienes solicitudes registradas.
+
+  //- 1. Importamos la librería SweetAlert2 desde un CDN (agrégalo al final del body)
+  script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
+
+  script.
+    // 2. Al cargar la página, revisamos si la URL tiene el parámetro 'enviado'
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('enviado') === 'true') {
+      // 3. Disparamos la alerta bonita
+      Swal.fire({
+        title: '¡Ticket Enviado!',
+        text: 'Tu solicitud ha sido registrada correctamente y pronto será atendida.',
+        icon: 'success',
+        confirmButtonColor: '#2e7d32',
+        confirmButtonText: 'Entendido'
+      });
+
+      // 4. Limpiamos la URL para que no vuelva a salir la alerta si el usuario refresca la página
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }            
