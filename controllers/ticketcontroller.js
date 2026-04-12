@@ -3,23 +3,29 @@ const db = require('../config/database');
 
 
 const mostrarAdminDepto = async (req, res) => {
-    const mensaje = 'Bienvenido a la página de adminDepto';
-    const titulo = 'adminDepto';
-    let tickets = [];
-    
+    const user = req.session.usuario;
+
+    // Si por algo se pierde la sesión, evitamos el error enviando al login
+    if (!user) return res.redirect('/login');
+
     try {
-        const [rows] = await db.query(
-            `SELECT id, descripcion, ubicacion, estado, prioridad
-             FROM tickets
-             WHERE departamento_id = ?`,
-            [1] 
-        );
-        tickets = rows;
-    } catch (err) {
-        console.error(err);
+        // Obtenemos el nombre del departamento
+        const [depto] = await db.query('SELECT nombre FROM departamentos WHERE id = ?', [user.departamento_id]);
+        
+        // Obtenemos los tickets
+        const [tickets] = await db.query('SELECT * FROM tickets WHERE departamento_id = ?', [user.departamento_id]);
+
+        // ¡AQUÍ ESTÁ LA CLAVE! 
+        // Debes pasar "nombreDepto" exactamente como lo usas en el .pug
+        res.render('adminDepto', { 
+            nombreDepto: depto[0].nombre, // <--- Verifica que esto no sea undefined
+            usuarioNombre: user.nombre,
+            tickets: tickets 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error interno");
     }
-    
-    res.render('adminDepto', { mensaje, titulo, tickets });
 };
 
 const actualizarTicket = async (req, res) => {

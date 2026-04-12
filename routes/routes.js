@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const ticketController = require('../controllers/ticketcontroller');
 const altascontroller = require('../controllers/altascontroller');
+const authcontroller = require('../controllers/authcontroller');
+const db = require('../config/database')
+
+
 
 router.get('/', (req, res) => {
     const mensaje = 'Bienvenido a la página de inicioo';
@@ -15,11 +19,12 @@ router.get('/inicioo', (req, res) => {
     res.render('inicioo',{mensaje, titulo});
 });
 
+
 router.get('/login', (req, res) => {
-    const mensaje = 'Bienvenido a la página de login';
-    const titulo = 'login';
-    res.render('login',{mensaje, titulo});
+    res.render('login', { titulo: 'Login - System Tickets' });
 });
+router.post('/login', authcontroller.login);
+
 
 router.get('/usuariosN1', (req, res) => {
     const mensaje = 'Bienvenido a la página de usuariosN1';
@@ -47,6 +52,32 @@ router.get('/adminGeneral', (req, res) => {
     const mensaje = 'Bienvenido a la página de adminGeneral';
     const titulo = 'adminGeneral';
     res.render('adminGeneral',{mensaje, titulo});
+});
+
+router.get('/adminDepto', async (req, res) => {
+    // 1. Verificamos que sea un Admin de Área (rol_id 2)
+    const user = req.session.usuario;
+    if (!user || user.rol_id !== 2) {
+        return res.redirect('/login');
+    }
+
+    try {
+        // 2. Buscamos el nombre del departamento
+        const [depto] = await db.query('SELECT nombre FROM departamentos WHERE id = ?', [user.departamento_id]);
+        
+        // 3. Buscamos SOLO los tickets de SU departamento
+        const [tickets] = await db.query('SELECT * FROM tickets WHERE departamento_id = ?', [user.departamento_id]);
+
+        // 4. Renderizamos la vista con los datos reales
+        res.render('adminDepto', { 
+            nombreDepto: depto[0].nombre,
+            usuarioNombre: user.nombre,
+            tickets: tickets 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al cargar el panel");
+    }
 });
 
 //altasUsuarios

@@ -162,14 +162,15 @@ html(lang="es")
       }
   body
     .sidebar
-      h2 ADMIN DEPTO MANTENIMIENTO
-
+      h2 ADMIN DEPTO #{(nombreDepto || 'Departamento').toUpperCase()}
       a(href="/login")
         i.bi.bi-box-arrow-right
-        | Cerrar sesión
+          | Cerrar sesión
+        
     .main
       .header
-        h1 Departamento: Mantenimiento
+        h1 Departamento: #{nombreDepto}
+        p Bienvenido, #{nombreUsuario}
         p Gestión de tickets
       .table-container
         h2 Solicitudes recibidas
