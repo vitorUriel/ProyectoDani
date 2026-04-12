@@ -20,6 +20,9 @@ const mostrarAdminGeneral = async (req, res) => {
     }
 };
 
+
+
 module.exports = {
     mostrarAdminGeneral,
 };
+

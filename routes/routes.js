@@ -26,26 +26,33 @@ router.get('/login', (req, res) => {
 router.post('/login', authcontroller.login);
 
 
-
-// NUEVA RUTA DINÁMICA
 router.get('/usuariosN1', async (req, res) => {
     const user = req.session.usuario;
-    
-    // Verificamos que el usuario esté logueado
     if (!user) return res.redirect('/login');
 
     try {
-        // 1. Buscamos en la base de datos SOLO los tickets de este usuario
-        const [misTickets] = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
+        // Hacemos la consulta
+        const resultado = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
+        
+        // Dependiendo de si usas mysql o mysql2, los datos vienen en el índice 0 o directo.
+        // Esta línea asegura que SIEMPRE saquemos el arreglo de tickets correctamente.
+        let misTickets = [];
+        if (Array.isArray(resultado[0])) {
+            misTickets = resultado[0]; // Para mysql2 (devuelve [rows, fields])
+        } else if (Array.isArray(resultado)) {
+            misTickets = resultado;    // Para otras configuraciones que devuelven directo los rows
+        }
 
-        // 2. Renderizamos la vista y LE PASAMOS los tickets
+        // Imprimimos en consola para ver qué estamos mandando (te servirá para revisar)
+        console.log("Tickets encontrados para el usuario:", misTickets);
+
         res.render('usuariosN1', { 
             titulo: 'Panel Usuario',
             usuarioNombre: user.nombre,
-            tickets: misTickets // <--- ¡ESTA ES LA LÍNEA MÁGICA QUE QUITA EL ERROR!
+            tickets: misTickets 
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error en la consulta:", error);
         res.status(500).send("Error al cargar el panel de usuario");
     }
 });
@@ -114,36 +121,8 @@ router.get('/adminGeneral', (req, res) => {
     res.render('adminGeneral',{mensaje, titulo});
 });
 
-router.get('/usuariosN1', async (req, res) => {
-    const user = req.session.usuario;
-    if (!user) return res.redirect('/login');
 
-    try {
-        // Hacemos la consulta
-        const resultado = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
-        
-        // Dependiendo de si usas mysql o mysql2, los datos vienen en el índice 0 o directo.
-        // Esta línea asegura que SIEMPRE saquemos el arreglo de tickets correctamente.
-        let misTickets = [];
-        if (Array.isArray(resultado[0])) {
-            misTickets = resultado[0]; // Para mysql2 (devuelve [rows, fields])
-        } else if (Array.isArray(resultado)) {
-            misTickets = resultado;    // Para otras configuraciones que devuelven directo los rows
-        }
 
-        // Imprimimos en consola para ver qué estamos mandando (te servirá para revisar)
-        console.log("Tickets encontrados para el usuario:", misTickets);
-
-        res.render('usuariosN1', { 
-            titulo: 'Panel Usuario',
-            usuarioNombre: user.nombre,
-            tickets: misTickets 
-        });
-    } catch (error) {
-        console.error("Error en la consulta:", error);
-        res.status(500).send("Error al cargar el panel de usuario");
-    }
-});
 
 //altasUsuarios
 router.get('/altasUsuario', altascontroller.mostrarVistaAltas);
@@ -157,10 +136,40 @@ router.get('/altasUsuario', (req, res) => {
 
 
 
-router.get('/ticketImprimir', (req, res) => {
-    const mensaje = 'Bienvenido a la página de ticketImprimir';
-    const titulo = 'ticketImprimir';
-    res.render('ticketImprimir',{mensaje, titulo});
+// Ruta para imprimir un ticket específico usando un parámetro en la URL (:id)
+router.get('/ticketImprimir/:id', async (req, res) => {
+    // Verificamos que haya un usuario logueado (puedes validar que sea admin si lo deseas)
+    const user = req.session.usuario;
+    if (!user) return res.redirect('/login');
+
+    const idTicket = req.params.id; // Extraemos el ID de la URL
+
+    try {
+        // Buscamos solo el ticket que coincide con ese ID
+        const resultado = await db.query('SELECT * FROM tickets WHERE id = ?', [idTicket]);
+        
+        // Extraemos el ticket (dependiendo de mysql o mysql2)
+        let ticketEncontrado = null;
+        if (Array.isArray(resultado[0]) && resultado[0].length > 0) {
+            ticketEncontrado = resultado[0][0]; 
+        } else if (Array.isArray(resultado) && resultado.length > 0) {
+            ticketEncontrado = resultado[0];
+        }
+
+        // Si por alguna razón el ticket no existe, mostramos error
+        if (!ticketEncontrado) {
+            return res.status(404).send("El ticket solicitado no existe.");
+        }
+
+        // Renderizamos tu vista y le pasamos los datos del ticket
+        res.render('ticketImprimir', { 
+            ticket: ticketEncontrado 
+        });
+
+    } catch (error) {
+        console.error("Error al buscar el ticket para imprimir:", error);
+        res.status(500).send("Error al generar el ticket de impresión");
+    }
 });
 
 

@@ -203,10 +203,10 @@ html(lang="es")
                   button.btn.btn-print(type="button", onclick=`guardarCambios(${ticket.id})`)
                     i.bi.bi-save
                     | Guardar
-                  a.button.btn.btn-print(type="button",href="/ticketImprimir")
+                  a.button.btn.btn-print(onclick="window.location.href='/ticketImprimir/" + ticket.id + "'")
                   
                     i.bi.bi-printer
-                    | Ver más
+                    | Imprimir
           else
             tr
               td(colspan="6", style="text-align: center; padding: 20px;") No hay tickets asignados a este departamento aún.

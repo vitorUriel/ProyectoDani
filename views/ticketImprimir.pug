@@ -106,8 +106,12 @@ html(lang="es")
 
     .ticket
       h2 SYSTEM TICKETS
+      
+      //- Agregamos el número de folio formateado
+      p Folio: 
+        strong= 'TKT-' + ticket.id.toString().padStart(3, '0')
 
-      p Fecha: 
+      p Fecha de impresión: 
         span#fecha
       p Hora: 
         span#hora
@@ -116,11 +120,13 @@ html(lang="es")
 
       p
         strong Ubicación:
-      p ----------------------
+      //- Imprimimos la ubicación real desde la BD
+      p= ticket.ubicacion
 
       p
-        strong Descripción:
-      p ----------------------
+        strong Descripción del problema:
+      //- Imprimimos la descripción real desde la BD
+      p= ticket.descripcion
 
       .line
 
@@ -136,7 +142,6 @@ html(lang="es")
 
       .center
         p ¡Gracias por su solicitud!
-
     button.btn(onclick="window.print()") Imprimir Ticket
 
     script.
