@@ -1,5 +1,6 @@
 const db = require('../config/database');
 const bcrypt = require('bcrypt');
+
 const login = async (req, res) => {
     const { correo, password } = req.body;
 
@@ -9,7 +10,7 @@ const login = async (req, res) => {
         
         // Si el arreglo está vacío, el usuario no existe
         if (usuarios.length === 0) {
-            return res.send(`<script>alert('El correo no existe'); window.history.back();</script>`);
+            return res.redirect('/login?error=no_existe');
         }
 
         // Extraemos al usuario encontrado
@@ -21,7 +22,7 @@ const login = async (req, res) => {
         
         // Si NO coinciden, lo rebotamos
         if (!coinciden) {
-            return res.send(`<script>alert('Contraseña incorrecta'); window.history.back();</script>`);
+            return res.redirect('/login?error=password');
         }
 
         // 3. ¡ÉXITO! Guardamos sus datos en la "memoria" (sesión)

@@ -3,6 +3,7 @@ html(lang="es")
   head
     meta(charset="UTF-8")
     title Login - System Tickets
+    link(rel="icon", href="/img/logo.png", type="image/png")
     style.
       :root {
       --verde1: #99E89D;
@@ -132,3 +133,35 @@ html(lang="es")
         button.btn(type="submit") Iniciar sesión
       .footer
         | © Sistema de tickets
+
+        //- Asegúrate de tener importado SweetAlert2
+script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
+
+script.
+    // 1. Revisamos si la URL trae un chisme (ej. misitio.com/login?error=password)
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+
+    // 2. Si hay un error, disparamos la animación bonita
+    if (error === 'no_existe') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'El correo ingresado no existe.',
+            heightAuto: false,      
+            scrollbarPadding: false
+        });
+    } else if (error === 'password') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Acceso Denegado',
+            text: 'La contraseña es incorrecta.',
+            heightAuto: false,       
+            scrollbarPadding: false
+        });
+    }
+
+    // 3. Limpiamos la URL para que no se quede pegado el mensaje si recarga la página
+    if (error) {
+        window.history.replaceState(null, '', window.location.pathname);
+    }
