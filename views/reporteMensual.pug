@@ -174,3 +174,13 @@ html(lang="es")
                 style="text-align: center; padding: 20px;"
               )
                 | No hay datos registrados para este mes.
+
+   script.
+    // Detectamos si la página se cargó desde la memoria del botón "Atrás"
+    window.addEventListener('pageshow', function (event) {
+        // event.persisted es true si la página viene del BFCache
+        if (event.persisted) {
+            // Obligamos al navegador a recargar y preguntarle al servidor
+            window.location.reload(); 
+        }
+    });       

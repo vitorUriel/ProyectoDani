@@ -5,160 +5,324 @@ html(lang="es")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Admin General
     link(href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css", rel="stylesheet")
+    script.
+      window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+          window.location.reload();
+        }
+      });
     style.
       :root {
-      --verde1: #99E89D;
-      --verde2: #73C883;
-      --verde3: #4DA768;
-      --verde4: #2E874E;
-      --verde5: #006633;
+        --fondo: #f4f7f8;
+        --superficie: #ffffff;
+        --verde-claro: #bde5bf;
+        --verde-medio: #82b97c;
+        --verde-oscuro: #225f35;
+        --gris-texto: #4a5b56;
+        --gris-claro: #e7efec;
+        --sombra: 0 18px 45px rgba(0, 0, 0, 0.12);
       }
-      
+
       * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
-      
+
       body {
-      display: flex;
-      background: linear-gradient(135deg, #4CAF50, #81C784);
+        min-height: 100vh;
+        background: var(--fondo);
       }
-      
-   
+
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
       .sidebar {
-      width: 250px;
-      min-height: 100vh;
-      background: #0d3b2e;
-      color: white;
-      padding: 20px;
-      position: fixed;
+        width: 280px;
+        background: linear-gradient(180deg, #164926 0%, #0d3b2e 100%);
+        color: var(--superficie);
+        padding: 32px 24px;
+        position: sticky;
+        top: 0;
       }
-      
+
       .sidebar h2 {
-      margin-bottom: 30px;
+        font-size: 1.9rem;
+        margin-bottom: 32px;
+        letter-spacing: 0.05em;
       }
-      
+
       .sidebar a {
-      color: #cce7dc;
-      text-decoration: none;
-      display: block;
-      padding: 10px;
-      border-radius: 8px;
-      transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        padding: 14px 16px;
+        border-radius: 14px;
+        margin-bottom: 12px;
+        transition: background 0.25s ease;
       }
-      
+
       .sidebar a:hover {
-      background: #145c43;
-      color: white;
+        background: rgba(255, 255, 255, 0.08);
       }
-      
-      
+
       .main {
-      margin-left: 260px;
-      padding: 30px;
-      width: 100%;
+        flex: 1;
+        padding: 36px;
+        max-width: 1600px;
+        margin: 0 auto;
       }
-      
-     
+
       .header {
-      color: white;
-      margin-bottom: 20px;
+        margin-bottom: 28px;
       }
-      
+
       .header h1 {
-      font-size: 2.2rem;
+        color: var(--verde-oscuro);
+        font-size: 2.6rem;
+        margin-bottom: 10px;
       }
-      
-     
+
+      .header p {
+        color: var(--gris-texto);
+        font-size: 1rem;
+      }
+
       .card {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        background: var(--superficie);
+        border-radius: 28px;
+        padding: 30px;
+        box-shadow: var(--sombra);
+        margin-bottom: 28px;
       }
-      
-      
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 22px;
+      }
+
+      .card-grid h2 {
+        margin: 0;
+        font-size: 1.45rem;
+        color: var(--verde-oscuro);
+      }
+
       .btn {
-      padding: 10px 15px;
-      background: var(--verde4);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-      margin-bottom: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        background: var(--verde-medio);
+        color: var(--superficie);
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease;
       }
-      
+
       .btn:hover {
-      background: var(--verde5);
-      transform: translateY(-1px);
+        background: var(--verde-oscuro);
+        transform: translateY(-1px);
       }
-      
-      
+
+      .filter-panel {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(220px, 1fr)) auto;
+        gap: 14px;
+        align-items: end;
+        margin-bottom: 24px;
+      }
+
+      .filter-panel input,
+      .filter-panel select {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid #d8e3dd;
+        border-radius: 14px;
+        background: var(--gris-claro);
+        color: #2f3a36;
+        font-size: 0.98rem;
+      }
+
+      .filter-panel button {
+        width: 100%;
+      }
+
       table {
-      width: 100%;
-      border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--superficie);
       }
-      
-      th {
-      background: #2e7d32;
-      color: white;
-      padding: 12px;
+
+      thead {
+        background: linear-gradient(90deg, var(--verde-claro), var(--verde-medio));
+        color: var(--superficie);
       }
-      
+
+      th,
       td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
+        padding: 18px 16px;
+        text-align: left;
       }
-      
-      tr:hover {
-      background: #f9f9f9;
+
+      th {
+        font-weight: 600;
+        letter-spacing: 0.02em;
       }
-      
-      
-      h2 {
-      margin-bottom: 10px;
-      color: var(--verde5);
+
+      tbody tr {
+        border-bottom: 1px solid #e5ece8;
+      }
+
+      tbody tr:nth-child(even) {
+        background: #fbfdfb;
+      }
+
+      tbody tr:hover {
+        background: #eef7ec;
+      }
+
+      .action-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      .action-link,
+      .action-delete {
+        padding: 8px 14px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .action-link {
+        background: var(--verde-oscuro);
+        color: var(--superficie);
+      }
+
+      .action-delete {
+        background: #d94c4c;
+        color: var(--superficie);
+        border: none;
+      }
+
+      .action-delete:hover {
+        filter: brightness(0.95);
+      }
+
+      .empty-row td {
+        text-align: center;
+        color: #55635f;
+        padding: 30px 0;
+      }
+
+      @media (max-width: 1080px) {
+        .filter-panel {
+          grid-template-columns: 1fr;
+        }
+
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .main {
+          padding: 24px 18px;
+        }
+
+        .sidebar {
+          width: 100%;
+          position: relative;
+        }
+
+        .app {
+          flex-direction: column;
+        }
+
+        .filter-panel button {
+          width: 100%;
+        }
       }
   body
-    .sidebar
-      h2 ADMIN GENERAL
-      a(href="/reporteMensual")
-        i.bi.bi-house-door-fill
-        | Reportes Mensuales
-      a(href="/logout")
-        i.bi.bi-box-arrow-right
-        | Cerrar sesión
+    .app
+      .sidebar
+        h2 ADMIN GENERAL
+        a(href="/reporteMensual")
+          i.bi.bi-bar-chart-fill
+          | Reportes Mensuales
+        a(href="/logout")
+          i.bi.bi-box-arrow-right
+          | Cerrar sesión
 
-    .main
-      .header
-        h1 Gestión de Usuarios
-        p Administración del sistema
+      .main
+        .header
+          h1 Gestión de Usuarios
+          p Control centralizado para crear, editar y filtrar usuarios
 
-      .card
-        button.btn(onclick="window.location.href='/altasUsuario'")
-          i.bi.bi-person-plus
-          | Nuevo Usuario
-        h2 Lista de usuarios
-        table
-          tr
-            th ID
-            th Nombre
-            th Correo
-            th Nivel (Rol ID)
-            th Departamento
+        .card
+          .card-grid
+            h2 Usuarios
+            button.btn(onclick="window.location.href='/altasUsuario'")
+              i.bi.bi-person-plus
+              | Nuevo usuario
 
-          each usuario in usuarios
-            tr
-              td= usuario.id
-              td= usuario.nombre
-              td= usuario.correo
-              td= usuario.rol_id
-              td= usuario.departamento_id ? usuario.departamento_id : '-'
+          form(method="get", action="/adminGeneral")
+            .filter-panel
+              input(type="text", name="q", placeholder="Buscar por nombre o correo", value=(query && query.q) || '')
+              select(name="rol")
+                option(value="") Todos los roles
+                option(value="1" selected=(query && query.rol == '1')) Admin
+                option(value="2" selected=(query && query.rol == '2')) Usuario
+              select(name="departamento")
+                option(value="") Todos los departamentos
+                each dep in departamentos
+                  option(value=dep.id selected=(query && query.departamento == dep.id))= dep.nombre
+              button.btn(type="submit") Filtrar
 
-          if usuarios.length === 0
-            tr
-              td(colspan="5" style="text-align: center;") No hay usuarios registrados aún.
+          table
+            thead
+              tr
+                th ID
+                th Nombre
+                th Correo
+                th Rol
+                th Departamento
+                th Acciones
+            tbody
+              each usuario in usuarios
+                tr
+                  td= usuario.id
+                  td= usuario.nombre
+                  td= usuario.correo
+                  td= usuario.rol_nombre || usuario.rol_id
+                  td= usuario.departamento_nombre || usuario.departamento_id || '-'
+                  td
+                    .action-group
+                      a.action-link(href=`/usuarios/${usuario.id}/editar`) Editar
+                      form(method="post", action=`/usuarios/${usuario.id}/eliminar`, style="display:inline")
+                        button.action-delete(type="submit", onclick="return confirm('¿Eliminar usuario?')") Eliminar
+              if usuarios.length === 0
+                tr.empty-row
+                  td(colspan="6") No hay usuarios registrados aún.
+script.
+    window.addEventListener('pageshow', function (event) {
+        // Chequeo doble: BFCache nativo o API de navegación (botón atrás = tipo 2)
+        var esBotonAtras = event.persisted || 
+                          (window.performance && window.performance.getEntriesByType("navigation")[0].type === 'back_forward');
+        
+        if (esBotonAtras) {
+            // Recarga obligatoria ignorando la caché local
+            window.location.reload(true); 
+        }
+    });

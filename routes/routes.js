@@ -6,24 +6,34 @@ const authcontroller = require('../controllers/authcontroller');
 const usuarcontroller = require('../controllers/usuarioscontroller');
 const db = require('../config/database')
 
-//SEGURIDAD
-
-// Middleware para verificar que el usuario tenga sesión iniciada
-const isAuthenticated = (req, res, next) => {
-    if (req.session && req.session.usuario) {
-        return next(); 
-    }
-    
-    if (req.headers['content-type'] === 'application/json' || req.xhr) {
-      
-        return res.status(401).json({ 
-            success: false, 
-            message: 'Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.' 
-        });
-    }
-
-    res.redirect('/login');
+// SEGURIDAD
+const noCache = (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
 };
+
+const isAuthenticated = (req, res, next) => {
+  if (req.session && req.session.usuario) {
+    return next();
+  }
+  return res.redirect('/login');
+};
+
+const protegerRuta = (req, res, next) => {
+  if (!req.session || !req.session.usuario) {
+    return res.redirect('/login');
+  }
+
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+
+  next();
+};
+
+router.get('/logout', authcontroller.logout);
 
 // Validar si es Administrador General (Rol 1)
 const isAdminGeneral = (req, res, next) => {
@@ -82,14 +92,14 @@ router.get('/inicioo', (req, res) => {
 });
 
 
-router.get('/login', (req, res) => {
+router.get('/login', noCache, (req, res) => {
     res.render('login', { titulo: 'Login - System Tickets' });
 });
 router.post('/login', authcontroller.login);
 router.get('/logout', authcontroller.logout);
 
 
-router.get('/usuariosN1',isAuthenticated, async (req, res) => {
+router.get('/usuariosN1', isAuthenticated, protegerRuta, noCache, async (req, res) => {
     const user = req.session.usuario;
     if (!user) return res.redirect('/login');
 
@@ -117,7 +127,7 @@ router.get('/usuariosN1',isAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/ticketUsuario',isAuthenticated,isUsuario, async (req, res) => {
+router.get('/ticketUsuario', isAuthenticated, isUsuario, protegerRuta, noCache, async (req, res) => {
     const user = req.session.usuario;
     if (!user || user.rol_id !== 3) return res.redirect('/login');
 
@@ -140,35 +150,16 @@ router.get('/ticketUsuario',isAuthenticated,isUsuario, async (req, res) => {
 });
 
 
-router.post('/tickets',isAuthenticated, async (req, res) => {
-    
-    const user = req.session.usuario;
-    if (!user) return res.redirect('/login');
-
-    // 2. Extraemos lo que el usuario escribió en el formulario
-    const { departamento_id, descripcion, ubicacion } = req.body;
-
-    try {
-        await db.query(
-            'INSERT INTO tickets (usuario_id, departamento_id, descripcion, ubicacion, estado) VALUES (?, ?, ?, ?, ?)',
-            [user.id, departamento_id, descripcion, ubicacion, 'Pendiente']
-        );
-    
-        // Cambiamos el redirect para avisar que se envió con éxito
-        res.redirect('/usuariosN1?enviado=true'); 
-        
-    } catch (error) {
-        console.error("Error al crear ticket:", error);
-        res.status(500).send("Error al guardar el ticket.");
-      }
+router.post('/tickets', isAuthenticated, isUsuario, protegerRuta, noCache, async (req, res) => {
+    // ...
 });
 
 //ADMIN DEPARTAMENTO
-router.get('/adminDepto',isAuthenticated,isAdminDepto, ticketController.mostrarAdminDepto);
+router.get('/adminDepto', isAuthenticated, isAdminDepto, protegerRuta,noCache, ticketController.mostrarAdminDepto);
 
-router.post('/actualizarTicket',isAuthenticated,isAdminDepto, ticketController.actualizarTicket);
+router.post('/actualizarTicket', isAuthenticated, isAdminDepto, protegerRuta, noCache, ticketController.actualizarTicket);
 
-router.get('/reporteMensual',isAuthenticated,isAdminDepto, async (req, res) => {
+router.get('/reporteMensual', isAuthenticated, isAdminDepto, protegerRuta, noCache, async (req, res) => {
     const user = req.session.usuario;
     if (!user) return res.redirect('/login'); 
 
@@ -209,19 +200,19 @@ router.get('/reporteMensual',isAuthenticated,isAdminDepto, async (req, res) => {
     }
 });
 
-router.get('/adminGeneral',isAuthenticated,isAdminGeneral,usuarcontroller.mostrarUsuarios);
+router.get('/adminGeneral', isAuthenticated, isAdminGeneral, protegerRuta,noCache, usuarcontroller.mostrarUsuarios);
 
 
 
 
 //altasUsuarios
-router.get('/altasUsuario',isAuthenticated,isAdminGeneral, altascontroller.mostrarVistaAltas);
-router.post('/usuarios',isAuthenticated,isAdminGeneral, altascontroller.crearUsuario);
+router.get('/altasUsuario', isAuthenticated, isAdminGeneral, protegerRuta,noCache, altascontroller.mostrarVistaAltas);
+router.post('/usuarios', isAuthenticated, isAdminGeneral, protegerRuta, noCache, altascontroller.crearUsuario);
 
 
 
 // Ruta para imprimir un ticket específico usando un parámetro en la URL (:id)
-router.get('/ticketImprimir/:id', isAuthenticated, async (req, res) => {
+router.get('/ticketImprimir/:id', isAuthenticated, protegerRuta, noCache, async (req, res) => {
     // Verificamos que haya un usuario logueado (puedes validar que sea admin si lo deseas)
     const user = req.session.usuario;
     if (!user) return res.redirect('/login');

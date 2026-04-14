@@ -22,7 +22,11 @@ const mostrarVistaAltas = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.render('altasUsuario', { titulo: 'Altas', mensaje: 'Error al cargar deptos' });
+        res.render('altasUsuario', { 
+            titulo: 'Altas',
+            mensaje: 'Error al cargar deptos',
+            deptos: []
+        });
     }
 };
 

@@ -215,3 +215,10 @@ html(lang="es")
       // 4. Limpiamos la URL para que no vuelva a salir la alerta si el usuario refresca la página
       window.history.replaceState({}, document.title, window.location.pathname);
     }            
+
+script.
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            window.location.reload(); 
+        }
+    });

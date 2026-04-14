@@ -229,3 +229,10 @@ html(lang="es")
           })
           .catch(() => alert('Error de red al contactar el servidor.'));
         }
+
+    script.
+      window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+          window.location.reload();
+        }
+      });

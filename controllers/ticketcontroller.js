@@ -1,26 +1,20 @@
-
 const db = require('../config/database');
 
 
 const mostrarAdminDepto = async (req, res) => {
     const user = req.session.usuario;
-
-    // Si por algo se pierde la sesión, evitamos el error enviando al login
     if (!user) return res.redirect('/login');
 
     try {
-        // Obtenemos el nombre del departamento
         const [depto] = await db.query('SELECT nombre FROM departamentos WHERE id = ?', [user.departamento_id]);
-        
-        // Obtenemos los tickets
+        if (!depto || !depto[0]) {
+            return res.status(404).send('Departamento no encontrado');
+        }
         const [tickets] = await db.query('SELECT * FROM tickets WHERE departamento_id = ?', [user.departamento_id]);
-
-        // ¡AQUÍ ESTÁ LA CLAVE! 
-        // Debes pasar "nombreDepto" exactamente como lo usas en el .pug
         res.render('adminDepto', { 
-            nombreDepto: depto[0].nombre, // <--- Verifica que esto no sea undefined
+            nombreDepto: depto[0].nombre,
             usuarioNombre: user.nombre,
-            tickets: tickets 
+            tickets
         });
     } catch (error) {
         console.error(error);
@@ -33,8 +27,6 @@ const mostrarTicketUsuario = async (req, res) => {
     if (!user || user.rol_id !== 3) return res.redirect('/login');
 
     try {
-        // Buscamos SOLO los tickets que creó ESTE usuario en particular
-        // (Asegúrate de que tu tabla 'tickets' tenga una columna como 'usuario_id')
         const [misTickets] = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
 
         res.render('ticketUsuario', { 
