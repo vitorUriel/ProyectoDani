@@ -5,6 +5,66 @@ const altascontroller = require('../controllers/altascontroller');
 const authcontroller = require('../controllers/authcontroller');
 const db = require('../config/database')
 
+//SEGURIDAD
+
+// Middleware para verificar que el usuario tenga sesión iniciada
+const isAuthenticated = (req, res, next) => {
+    if (req.session && req.session.usuario) {
+        return next(); 
+    }
+    
+    if (req.headers['content-type'] === 'application/json' || req.xhr) {
+      
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.' 
+        });
+    }
+
+    res.redirect('/login');
+};
+
+// Validar si es Administrador General (Rol 1)
+const isAdminGeneral = (req, res, next) => {
+    if (req.session.usuario && req.session.usuario.rol_id == 1) {
+        return next(); 
+    }
+    res.status(403).send(`
+        <div style="text-align: center; margin-top: 50px; font-family: Arial;">
+            <h1 style="color: #d33;">Acceso Denegado 🛑</h1>
+            <p>No tienes los permisos necesarios para ver esta página.</p>
+            <a href="/inicioo" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Regresar a Inicio</a>        
+    `);
+};
+
+// Validar si es Administrador de Departamento (Rol 2)
+
+const isAdminDepto = (req, res, next) => {
+    if (req.session.usuario && req.session.usuario.rol_id == 2) {
+        return next();
+    }
+    res.status(403).send(`
+        <div style="text-align: center; margin-top: 50px; font-family: Arial;">
+            <h1 style="color: #d33;">Acceso Denegado 🛑</h1>
+            <p>Esta área es exclusiva para los Administradores de Departamento.</p>
+            <a href="/inicioo" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Regresar a Inicio</a>      
+        </div>
+    `);
+};
+
+const isUsuario = (req, res, next) => {
+    if (req.session.usuario && req.session.usuario.rol_id == 3) {
+        return next();
+    }
+    res.status(403).send(`
+        <div style="text-align: center; margin-top: 50px; font-family: Arial;">
+            <h1 style="color: #d33;">Acceso Denegado 🛑</h1>
+            <p>Es necesario iniciar sesion como usuario.</p>
+            <a href="/inicioo" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Regresar a Inicio</a>      
+        </div>
+    `);
+};
+
 
 
 router.get('/', (req, res) => {
@@ -26,7 +86,7 @@ router.get('/login', (req, res) => {
 router.post('/login', authcontroller.login);
 
 
-router.get('/usuariosN1', async (req, res) => {
+router.get('/usuariosN1',isAuthenticated, async (req, res) => {
     const user = req.session.usuario;
     if (!user) return res.redirect('/login');
 
@@ -57,7 +117,7 @@ router.get('/usuariosN1', async (req, res) => {
     }
 });
 
-router.get('/ticketUsuario', async (req, res) => {
+router.get('/ticketUsuario',isAuthenticated, async (req, res) => {
     const user = req.session.usuario;
     if (!user || user.rol_id !== 3) return res.redirect('/login');
 
@@ -80,7 +140,7 @@ router.get('/ticketUsuario', async (req, res) => {
 });
 
 // RUTA POST: Atrapa los datos del formulario y los guarda en la Base de Datos
-router.post('/tickets', async (req, res) => {
+router.post('/tickets',isAuthenticated, async (req, res) => {
     // 1. Verificamos quién está creando el ticket
     const user = req.session.usuario;
     if (!user) return res.redirect('/login');
@@ -102,27 +162,25 @@ router.post('/tickets', async (req, res) => {
     }
 });
 
-router.get('/adminDepto', ticketController.mostrarAdminDepto);
+//ADMIN DEPARTAMENTO
+router.get('/adminDepto',isAuthenticated,isAdminDepto, ticketController.mostrarAdminDepto);
 
-router.post('/actualizarTicket', ticketController.actualizarTicket);
+router.post('/actualizarTicket',isAuthenticated,isAdminDepto, ticketController.actualizarTicket);
 
-router.get('/reporteMensual', async (req, res) => {
+router.get('/reporteMensual',isAuthenticated,isAdminDepto, async (req, res) => {
     const user = req.session.usuario;
-    if (!user) return res.redirect('/login'); // Opcional: Validar que sea admin
+    if (!user) return res.redirect('/login'); 
 
-    // 1. Tomamos el mes de la URL. Si no hay, calculamos el mes actual por defecto.
     let mesSeleccionado = req.query.mes;
     if (!mesSeleccionado) {
         const hoy = new Date();
         const año = hoy.getFullYear();
-        // Le sumamos 1 al mes porque en JavaScript enero es 0
         const mes = String(hoy.getMonth() + 1).padStart(2, '0'); 
-        mesSeleccionado = `${año}-${mes}`; // Queda en formato "YYYY-MM"
+        mesSeleccionado = `${año}-${mes}`; 
     }
 
     try {
         // 2. Consulta SQL: Cuenta tickets por departamento en ese mes en específico.
-        // Usamos LEFT JOIN para que también salgan los departamentos con 0 tickets.
         const query = `
             SELECT d.nombre AS departamento, COUNT(t.id) AS total 
             FROM departamentos d 
@@ -133,7 +191,6 @@ router.get('/reporteMensual', async (req, res) => {
         
         const resultado = await db.query(query, [mesSeleccionado]);
         
-        // Ajuste dependiendo si usas mysql o mysql2
         let estadisticas = [];
         if (Array.isArray(resultado[0])) {
             estadisticas = resultado[0];
@@ -141,10 +198,9 @@ router.get('/reporteMensual', async (req, res) => {
             estadisticas = resultado;
         }
 
-        // 3. Renderizamos la vista y le pasamos los datos
         res.render('reporteMensual', { 
             estadisticas: estadisticas,
-            mesSeleccionado: mesSeleccionado // Lo pasamos para que el input mantenga su valor
+            mesSeleccionado: mesSeleccionado 
         });
     } catch (error) {
         console.error("Error al generar el reporte mensual:", error);
@@ -152,7 +208,7 @@ router.get('/reporteMensual', async (req, res) => {
     }
 });
 
-router.get('/adminGeneral', (req, res) => {
+router.get('/adminGeneral',isAuthenticated,isAdminGeneral, (req, res) => {
     const mensaje = 'Bienvenido a la página de adminGeneral';
     const titulo = 'adminGeneral';
     res.render('adminGeneral',{mensaje, titulo});
@@ -162,10 +218,10 @@ router.get('/adminGeneral', (req, res) => {
 
 
 //altasUsuarios
-router.get('/altasUsuario', altascontroller.mostrarVistaAltas);
-router.post('/usuarios', altascontroller.crearUsuario);
+router.get('/altasUsuario',isAuthenticated,isAdminGeneral, altascontroller.mostrarVistaAltas);
+router.post('/usuarios',isAuthenticated, altascontroller.crearUsuario);
 
-router.get('/altasUsuario', (req, res) => {
+router.get('/altasUsuario',isAuthenticated, (req, res) => {
     const mensaje = 'Bienvenido a la página de altasUsuario';
     const titulo = 'altasUsuario';
     res.render('altasUsuario',{mensaje, titulo});
@@ -174,7 +230,7 @@ router.get('/altasUsuario', (req, res) => {
 
 
 // Ruta para imprimir un ticket específico usando un parámetro en la URL (:id)
-router.get('/ticketImprimir/:id', async (req, res) => {
+router.get('/ticketImprimir/:id', isAuthenticated, async (req, res) => {
     // Verificamos que haya un usuario logueado (puedes validar que sea admin si lo deseas)
     const user = req.session.usuario;
     if (!user) return res.redirect('/login');
@@ -185,7 +241,6 @@ router.get('/ticketImprimir/:id', async (req, res) => {
         // Buscamos solo el ticket que coincide con ese ID
         const resultado = await db.query('SELECT * FROM tickets WHERE id = ?', [idTicket]);
         
-        // Extraemos el ticket (dependiendo de mysql o mysql2)
         let ticketEncontrado = null;
         if (Array.isArray(resultado[0]) && resultado[0].length > 0) {
             ticketEncontrado = resultado[0][0]; 
@@ -193,12 +248,10 @@ router.get('/ticketImprimir/:id', async (req, res) => {
             ticketEncontrado = resultado[0];
         }
 
-        // Si por alguna razón el ticket no existe, mostramos error
         if (!ticketEncontrado) {
             return res.status(404).send("El ticket solicitado no existe.");
         }
 
-        // Renderizamos tu vista y le pasamos los datos del ticket
         res.render('ticketImprimir', { 
             ticket: ticketEncontrado 
         });
