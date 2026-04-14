@@ -219,9 +219,9 @@ router.get('/adminGeneral',isAuthenticated,isAdminGeneral, (req, res) => {
 
 //altasUsuarios
 router.get('/altasUsuario',isAuthenticated,isAdminGeneral, altascontroller.mostrarVistaAltas);
-router.post('/usuarios',isAuthenticated, altascontroller.crearUsuario);
+router.post('/usuarios',isAuthenticated,isAdminGeneral, altascontroller.crearUsuario);
 
-router.get('/altasUsuario',isAuthenticated, (req, res) => {
+router.get('/altasUsuario',isAuthenticated,isAdminGeneral, (req, res) => {
     const mensaje = 'Bienvenido a la página de altasUsuario';
     const titulo = 'altasUsuario';
     res.render('altasUsuario',{mensaje, titulo});

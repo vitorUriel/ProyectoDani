@@ -1,5 +1,5 @@
 const db = require('../config/database');
-// const bcrypt = require('bcryptjs'); // Descomenta esto cuando instales la librería
+const bcrypt = require('bcrypt');
 
 const nivelARolId = {
     '1': 3, // Usuario
@@ -11,10 +11,10 @@ const deptoFormAId = {
     '': null, '1': null, '2': 1, '3': 3, '4': 2, '5': 4,
 };
 
-// --- NUEVA FUNCIÓN: Muestra el formulario ---
+// --- FUNCIÓN: Muestra el formulario ---
 const mostrarVistaAltas = async (req, res) => {
     try {
-        // Opcional: Podrías consultar los departamentos aquí para mandarlos al select del Pug
+        // Consultamos los departamentos
         const [deptos] = await db.query('SELECT * FROM departamentos');
         res.render('altasUsuario', { 
             titulo: 'Dar de alta usuario', 
@@ -27,51 +27,33 @@ const mostrarVistaAltas = async (req, res) => {
     }
 };
 
-// --- TU FUNCIÓN: Crea el usuario ---
+// --- FUNCIÓN: Crea el usuario ---
 const crearUsuario = async (req, res) => {
-    // 1. Recibimos los datos con los nombres exactos que pusimos en el Pug
-    const { nombre, correo, password, rol_id, departamento_id } = req.body;
-
-    // 2. Validación básica
-    if (!nombre?.trim() || !correo?.trim() || !password || !rol_id) {
-        return res.status(400).json({ success: false, message: 'Faltan datos obligatorios' });
-    }
-
-    // 3. Regla de negocio: Si es Admin General (1) o Usuario Normal (3), ignoramos el departamento
-    let deptoFinal = departamento_id ? parseInt(departamento_id) : null;
-
-    if (rol_id === '1') {
-        deptoFinal = 1;
-    } else if (rol_id === '3') {
-        deptoFinal = null;
-    } else if (rol_id ==='2' && !deptoFinal) {
-        return res.status(400).json({ success: false, message: 'Favor de selccionar, a que departamento pertenece este administrador'});
-    }
-
     try {
-        // 4. Guardar en la base de datos
-        await db.query(
-            `INSERT INTO usuarios (nombre, correo, password, rol_id, departamento_id)
-             VALUES (?, ?, ?, ?, ?)`,
-            [nombre.trim(), correo.trim(), password, parseInt(rol_id), deptoFinal] 
-        );
-        
-        // Respondemos con JSON para que el script de Pug muestre la alerta bonita
-        res.json({ success: true, message: '¡Usuario creado exitosamente!' });
+        // Obtenemos los datos que envió el usuario desde el formulario
+        // (Asegúrate de que tu form envíe 'rol_id' y 'departamento_id' o haz el mapeo con tus constantes de arriba)
+        const { nombre, correo, password, rol_id, departamento_id } = req.body;
 
-    } catch (err) {
-        console.error(err);
-        if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ success: false, message: 'Ese correo ya está registrado.' });
-        }
-        res.status(500).json({ success: false, message: 'Error al crear el usuario en la base de datos.' });
+        // 1. Encriptamos la contraseña con bcrypt (10 "saltos" de seguridad)
+        const passwordEncriptada = await bcrypt.hash(password, 10);
+
+        // 2. Preparamos la consulta SQL
+        const sql = 'INSERT INTO usuarios (nombre, correo, password, rol_id, departamento_id) VALUES (?, ?, ?, ?, ?)';
+        
+        // 3. Ejecutamos la consulta usando "await db.query" (Igual que arriba)
+        await db.query(sql, [nombre, correo, passwordEncriptada, rol_id, departamento_id]);
+        
+        // Si no hay error en la línea anterior, respondemos que todo salió bien
+        res.json({ success: true, message: 'Usuario registrado con seguridad' });
+
+    } catch (error) {
+        // Imprimimos el error en la terminal para saber qué falló
+        console.log("Error al crear usuario:", error);
+        res.status(500).json({ success: false, message: 'Error en el servidor al registrar' });
     }
 };
-
-
 
 module.exports = {
-    mostrarVistaAltas, // ¡No olvides exportarla!
+    mostrarVistaAltas,
     crearUsuario,
 };
-

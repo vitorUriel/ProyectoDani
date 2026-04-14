@@ -1,5 +1,5 @@
 const db = require('../config/database');
-
+const bcrypt = require('bcrypt');
 const login = async (req, res) => {
     const { correo, password } = req.body;
 
@@ -15,8 +15,12 @@ const login = async (req, res) => {
         // Extraemos al usuario encontrado
         const usuario = usuarios[0];
 
-        // 2. Verificamos que la contraseña coincida
-        if (usuario.password !== password) {
+        // 2. LA MAGIA: Verificamos que la contraseña coincida usando bcrypt
+        // Comparamos la contraseña que escribió (password) con la encriptada en la BD (usuario.password)
+        const coinciden = await bcrypt.compare(password, usuario.password);
+        
+        // Si NO coinciden, lo rebotamos
+        if (!coinciden) {
             return res.send(`<script>alert('Contraseña incorrecta'); window.history.back();</script>`);
         }
 
@@ -28,7 +32,7 @@ const login = async (req, res) => {
             departamento_id: usuario.departamento_id
         };
 
-        // 4. EL DESVÍO DE RUTAS (Lo que pediste)
+        // 4. EL DESVÍO DE RUTAS
         // Redirigimos dependiendo de su nivel (rol_id)
         if (usuario.rol_id === 1) {
             // Admin General
