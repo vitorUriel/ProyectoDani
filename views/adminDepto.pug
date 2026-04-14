@@ -164,9 +164,7 @@ html(lang="es")
   body
     .sidebar
       h2 ADMIN DEPTO #{(nombreDepto || 'Departamento').toUpperCase()}
-      a(href="/login")
-        i.bi.bi-box-arrow-right
-          | Cerrar sesión
+      a(href="/logout")
         
     .main
       .header

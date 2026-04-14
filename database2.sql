@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-04-2026 a las 04:32:31
+-- Tiempo de generación: 14-04-2026 a las 09:02:44
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -83,16 +83,6 @@ CREATE TABLE `tickets` (
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `tickets`
---
-
-INSERT INTO `tickets` (`id`, `descripcion`, `ubicacion`, `estado`, `prioridad`, `usuario_id`, `departamento_id`, `fecha_creacion`) VALUES
-(3, 'Fuga de agua en el lavabo', 'Baños principales', 'Terminado', 'Media', 1, 1, '2026-04-02 01:06:47'),
-(4, 'Proyector no enciende', 'Aula 3', 'En proceso', 'Media', 1, 1, '2026-04-02 01:06:47'),
-(5, 'Urgente, poda del cesped', 'Area externa de cajas', 'Pendiente', 'Alta', 2, 3, '2026-04-12 02:18:19'),
-(7, 'reparacion de una computadora', 'laboratorio 5, edificio F', 'Terminado', 'Media', 14, 5, '2026-04-12 02:23:35');
-
 -- --------------------------------------------------------
 
 --
@@ -113,13 +103,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `correo`, `password`, `rol_id`, `departamento_id`) VALUES
-(1, 'Juan Perez', 'juan@example.com', '123456', 1, 4),
-(2, 'Maria Lopez', 'maria@example.com', '123456', 2, 3),
-(3, 'Luis', 'ejemplo@gmail.com', '987654321', 3, NULL),
-(14, 'manuel', 'manuel@gmail.com', '123456', 2, 5),
-(15, 'andres', 'andres@gmail.com', 'andres19', 3, 5),
-(16, 'jonatan', 'jona@gmail.com', 'jona95', 1, NULL),
-(17, 'AdminGen Ejemplo', 'admin@gmail.com', '123456', 1, 1);
+(1, 'Victor Martinez', 'victorur@gmail.com', '$2b$10$/OdXJ6wyBPw6wEFyWT03/OevaaJKo1NBEWl1t69Hj79JFY2t41ukW', 1, NULL),
+(2, 'Martha Romo', 'martha01@gmail.com', '$2b$10$qfIYcq7iKMGotBtDf353NuBT116o5AExRRNWE1SkIzYhRDqhrq3Gu', 2, 2);
 
 --
 -- Índices para tablas volcadas
@@ -174,13 +159,13 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas

@@ -3,6 +3,7 @@ const router = express.Router();
 const ticketController = require('../controllers/ticketcontroller');
 const altascontroller = require('../controllers/altascontroller');
 const authcontroller = require('../controllers/authcontroller');
+const usuarcontroller = require('../controllers/usuarioscontroller');
 const db = require('../config/database')
 
 //SEGURIDAD
@@ -34,7 +35,8 @@ const isAdminGeneral = (req, res, next) => {
             <h1 style="color: #d33;">Acceso Denegado 🛑</h1>
             <p>No tienes los permisos necesarios para ver esta página.</p>
             <a href="/inicioo" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Regresar a Inicio</a>        
-    `);
+        </div>
+            `);
 };
 
 // Validar si es Administrador de Departamento (Rol 2)
@@ -84,6 +86,7 @@ router.get('/login', (req, res) => {
     res.render('login', { titulo: 'Login - System Tickets' });
 });
 router.post('/login', authcontroller.login);
+router.get('/logout', authcontroller.logout);
 
 
 router.get('/usuariosN1',isAuthenticated, async (req, res) => {
@@ -103,9 +106,6 @@ router.get('/usuariosN1',isAuthenticated, async (req, res) => {
             misTickets = resultado;    // Para otras configuraciones que devuelven directo los rows
         }
 
-        // Imprimimos en consola para ver qué estamos mandando (te servirá para revisar)
-        console.log("Tickets encontrados para el usuario:", misTickets);
-
         res.render('usuariosN1', { 
             titulo: 'Panel Usuario',
             usuarioNombre: user.nombre,
@@ -117,7 +117,7 @@ router.get('/usuariosN1',isAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/ticketUsuario',isAuthenticated, async (req, res) => {
+router.get('/ticketUsuario',isAuthenticated,isUsuario, async (req, res) => {
     const user = req.session.usuario;
     if (!user || user.rol_id !== 3) return res.redirect('/login');
 
@@ -139,9 +139,9 @@ router.get('/ticketUsuario',isAuthenticated, async (req, res) => {
     }
 });
 
-// RUTA POST: Atrapa los datos del formulario y los guarda en la Base de Datos
+
 router.post('/tickets',isAuthenticated, async (req, res) => {
-    // 1. Verificamos quién está creando el ticket
+    
     const user = req.session.usuario;
     if (!user) return res.redirect('/login');
 
@@ -158,8 +158,9 @@ router.post('/tickets',isAuthenticated, async (req, res) => {
         res.redirect('/usuariosN1?enviado=true'); 
         
     } catch (error) {
-        // ... manejo de error ...
-    }
+        console.error("Error al crear ticket:", error);
+        res.status(500).send("Error al guardar el ticket.");
+      }
 });
 
 //ADMIN DEPARTAMENTO
@@ -208,11 +209,7 @@ router.get('/reporteMensual',isAuthenticated,isAdminDepto, async (req, res) => {
     }
 });
 
-router.get('/adminGeneral',isAuthenticated,isAdminGeneral, (req, res) => {
-    const mensaje = 'Bienvenido a la página de adminGeneral';
-    const titulo = 'adminGeneral';
-    res.render('adminGeneral',{mensaje, titulo});
-});
+router.get('/adminGeneral',isAuthenticated,isAdminGeneral,usuarcontroller.mostrarUsuarios);
 
 
 
@@ -220,12 +217,6 @@ router.get('/adminGeneral',isAuthenticated,isAdminGeneral, (req, res) => {
 //altasUsuarios
 router.get('/altasUsuario',isAuthenticated,isAdminGeneral, altascontroller.mostrarVistaAltas);
 router.post('/usuarios',isAuthenticated,isAdminGeneral, altascontroller.crearUsuario);
-
-router.get('/altasUsuario',isAuthenticated,isAdminGeneral, (req, res) => {
-    const mensaje = 'Bienvenido a la página de altasUsuario';
-    const titulo = 'altasUsuario';
-    res.render('altasUsuario',{mensaje, titulo});
-});
 
 
 

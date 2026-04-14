@@ -7,15 +7,26 @@ const router = require('./routes/routes');
 
 const app = express();
 
+const SESSION_SECRET = process.env.SESSION_SECRET || 'development-secret-please-change';
+
 // 1. Configuraciones de lectura de datos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 2. Configuración de Sesión (¡AQUÍ USAMOS EL .ENV!)
+// 2. Si estás detrás de un proxy o HTTPS, confiar en el proxy ayuda a que las cookies se envíen correctamente
+app.set('trust proxy', 1);
+
+// 3. Configuración de Sesión
 app.use(session({
-    secret: process.env.SESSION_SECRET, // Llamamos al secreto de tu archivo .env
-    resave: false,
-    saveUninitialized: false,
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 // 1 hora
+  }
 }));
 
 // 3. Configuración de Vistas (Pug)

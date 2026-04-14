@@ -124,20 +124,20 @@ html(lang="es")
       color: var(--verde5);
       }
   body
-    
     .sidebar
       h2 ADMIN GENERAL
       a(href="/reporteMensual")
         i.bi.bi-house-door-fill
         | Reportes Mensuales
-      a(href="/login")
-        i.bi.bi-gear-fill
+      a(href="/logout")
+        i.bi.bi-box-arrow-right
         | Cerrar sesión
-    
+
     .main
       .header
         h1 Gestión de Usuarios
         p Administración del sistema
+
       .card
         button.btn(onclick="window.location.href='/altasUsuario'")
           i.bi.bi-person-plus
@@ -145,17 +145,20 @@ html(lang="es")
         h2 Lista de usuarios
         table
           tr
+            th ID
             th Nombre
             th Correo
-            th Nivel
+            th Nivel (Rol ID)
             th Departamento
-          tr
-            td Juan Pérez
-            td juan@email.com
-            td Usuario
-            td -
-          tr
-            td Ana López
-            td ana@email.com
-            td Admin Mantenimiento
-            td Mantenimiento
+
+          each usuario in usuarios
+            tr
+              td= usuario.id
+              td= usuario.nombre
+              td= usuario.correo
+              td= usuario.rol_id
+              td= usuario.departamento_id ? usuario.departamento_id : '-'
+
+          if usuarios.length === 0
+            tr
+              td(colspan="5" style="text-align: center;") No hay usuarios registrados aún.

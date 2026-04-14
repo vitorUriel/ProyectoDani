@@ -14,12 +14,11 @@ const deptoFormAId = {
 // --- FUNCIÓN: Muestra el formulario ---
 const mostrarVistaAltas = async (req, res) => {
     try {
-        // Consultamos los departamentos
         const [deptos] = await db.query('SELECT * FROM departamentos');
         res.render('altasUsuario', { 
             titulo: 'Dar de alta usuario', 
             mensaje: 'Crea un nuevo miembro',
-            deptos // Se los pasas al Pug
+            deptos 
         });
     } catch (err) {
         console.error(err);
@@ -27,27 +26,23 @@ const mostrarVistaAltas = async (req, res) => {
     }
 };
 
-// --- FUNCIÓN: Crea el usuario ---
+
 const crearUsuario = async (req, res) => {
     try {
-        // Obtenemos los datos que envió el usuario desde el formulario
-        // (Asegúrate de que tu form envíe 'rol_id' y 'departamento_id' o haz el mapeo con tus constantes de arriba)
+      
         const { nombre, correo, password, rol_id, departamento_id } = req.body;
 
-        // 1. Encriptamos la contraseña con bcrypt (10 "saltos" de seguridad)
+    
         const passwordEncriptada = await bcrypt.hash(password, 10);
 
-        // 2. Preparamos la consulta SQL
+      
         const sql = 'INSERT INTO usuarios (nombre, correo, password, rol_id, departamento_id) VALUES (?, ?, ?, ?, ?)';
         
-        // 3. Ejecutamos la consulta usando "await db.query" (Igual que arriba)
         await db.query(sql, [nombre, correo, passwordEncriptada, rol_id, departamento_id]);
         
-        // Si no hay error en la línea anterior, respondemos que todo salió bien
         res.json({ success: true, message: 'Usuario registrado con seguridad' });
 
     } catch (error) {
-        // Imprimimos el error en la terminal para saber qué falló
         console.log("Error al crear usuario:", error);
         res.status(500).json({ success: false, message: 'Error en el servidor al registrar' });
     }
