@@ -1,54 +1,103 @@
+body {
+  background: linear-gradient(135deg, #4CAF50, #81C784);
+  min-height: 100vh;
+}
 
-      body {
-      background: linear-gradient(135deg, #4CAF50, #81C784);
-      min-height: 100vh;
-      }
-      
-      .sidebar {
-      width: 250px;
-      min-height: 100vh;
-      background: #0d3b2e;
-      color: white;
-      position: fixed;
-      }
-      
-      .sidebar h4 {
-      font-weight: bold;
-      }
-      
-      .sidebar .logo {
-      width: 60px;
-      }
-      
-      .sidebar a {
-      color: #cce7dc;
-      text-decoration: none;
-      display: block;
-      padding: 10px;
-      border-radius: 8px;
-      }
-      
-      .sidebar a:hover {
-      background: #145c43;
-      color: white;
-      }
-      
-      .main-content {
-      margin-left: 260px;
-      padding: 30px;
-      }
-      
-      .card-custom {
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      }
-      
-      .title-main {
-      font-size: 3rem;
-      font-weight: bold;
-      }
-      
-      .subtitle {
-      color: #2e7d32;
-      font-weight: 600;
-      }
+
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: #0d3b2e;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.sidebar h4 {
+  font-weight: bold;
+}
+
+.sidebar .logo {
+  width: 60px;
+}
+
+.sidebar a {
+  color: #cce7dc;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.sidebar a:hover {
+  background: #145c43;
+  color: white;
+}
+
+
+.main-content {
+  margin-left: 260px;
+  padding: 30px;
+}
+
+.card-custom {
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.title-main {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.subtitle {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+
+@media (max-width: 992px) {
+  .main-content {
+    margin-left: 0;
+    padding: 25px;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    min-height: auto;
+  }
+}
+
+
+@media (max-width: 576px) {
+  .main-content {
+    padding: 20px 15px;
+  }
+
+  .title-main {
+    font-size: 2rem; 
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .sidebar {
+    padding: 15px;
+  }
+
+  .sidebar .logo {
+    width: 45px; 
+  }
+
+  .sidebar a {
+    padding: 8px;
+    font-size: 0.95rem;
+  }
+
+  .card-custom {
+    border-radius: 12px;
+  }
+}
