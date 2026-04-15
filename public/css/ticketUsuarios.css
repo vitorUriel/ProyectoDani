@@ -1,0 +1,121 @@
+      :root {
+        --verde1: #99E89D;
+        --verde2: #73C883;
+        --verde3: #4DA768;
+        --verde4: #2E874E;
+        --verde5: #006633;
+        --blanco: #ffffff;
+        --gris: #f4f4f4;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #4CAF50, #81C784);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .ticket {
+        width: 420px;
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      }
+
+      .ticket-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .ticket-header h2 {
+        color: var(--verde5);
+      }
+
+      .ticket-header p {
+        font-size: 13px;
+        color: #666;
+      }
+
+      .info {
+        background: #e8f5e9;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 13px;
+      }
+
+      .field {
+        margin-bottom: 18px;
+      }
+
+      .field label {
+        font-size: 13px;
+        color: #333;
+      }
+
+      .field input,
+      .field textarea,
+      .field select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.3s;
+      }
+
+      .field input:focus,
+      .field textarea:focus,
+      .field select:focus {
+        border-color: var(--verde3);
+        box-shadow: 0 0 5px rgba(76,175,80,0.4);
+      }
+
+      .field textarea {
+        resize: none;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .btn-enviar {
+        background: var(--verde4);
+        color: white;
+      }
+
+      .btn-enviar:hover {
+        background: var(--verde5);
+        transform: translateY(-1px);
+      }
+
+      .btn-cancelar {
+        background: #0d3b2e;
+        color: white;
+      }
+
+      .btn-cancelar:hover {
+        background: #145c43;
+        transform: translateY(-1px);
+      }

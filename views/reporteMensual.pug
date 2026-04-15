@@ -3,6 +3,7 @@ html(lang="es")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="/css/reporteMensual.css")
     title Reporte Mensual
 
     script(src="https://cdn.jsdelivr.net/npm/chart.js")
@@ -11,120 +12,7 @@ html(lang="es")
       rel="stylesheet"
     )
 
-    style.
-      :root {
-        --verde1: #99E89D;
-        --verde2: #73C883;
-        --verde3: #4DA768;
-        --verde4: #2E874E;
-        --verde5: #006633;
-        --gris: #f4f4f4;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-      }
-
-      body {
-        display: flex;
-        background: linear-gradient(135deg, #4CAF50, #81C784);
-      }
-
-      .sidebar {
-        width: 250px;
-        min-height: 100vh;
-        background: #0d3b2e;
-        color: white;
-        padding: 20px;
-        position: fixed;
-      }
-
-      .sidebar h2 {
-        margin-bottom: 30px;
-      }
-
-      .sidebar a {
-        color: #cce7dc;
-        text-decoration: none;
-        display: block;
-        padding: 10px;
-        border-radius: 8px;
-        transition: 0.3s;
-      }
-
-      .sidebar a:hover {
-        background: #145c43;
-        color: white;
-      }
-
-      .main {
-        margin-left: 260px;
-        padding: 30px;
-        width: 100%;
-      }
-
-      .header {
-        color: white;
-        margin-bottom: 20px;
-      }
-
-      .header h1 {
-        font-size: 2.2rem;
-      }
-
-      .card {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        margin-top: 20px;
-      }
-
-      .filtro {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      input[type="month"] {
-        padding: 8px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-      }
-
-      input[type="month"]:focus {
-        border-color: var(--verde3);
-        outline: none;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-
-      th {
-        background: #2e7d32;
-        color: white;
-        padding: 12px;
-      }
-
-      td {
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-      }
-
-      tr:hover {
-        background: #f9f9f9;
-      }
-
-      h2 {
-        margin-bottom: 10px;
-        color: var(--verde5);
-      }
+    
 
   body
     .sidebar
@@ -175,12 +63,12 @@ html(lang="es")
               )
                 | No hay datos registrados para este mes.
 
-   script.
-    // Detectamos si la página se cargó desde la memoria del botón "Atrás"
-    window.addEventListener('pageshow', function (event) {
+    script.
+      // Detectamos si la página se cargó desde la memoria del botón "Atrás"
+      window.addEventListener('pageshow', function (event) {
         // event.persisted es true si la página viene del BFCache
         if (event.persisted) {
-            // Obligamos al navegador a recargar y preguntarle al servidor
-            window.location.reload(); 
+          // Obligamos al navegador a recargar y preguntarle al servidor
+          window.location.reload();
         }
-    });       
+      });       

@@ -151,7 +151,28 @@ router.get('/ticketUsuario', isAuthenticated, isUsuario, protegerRuta, noCache, 
 
 
 router.post('/tickets', isAuthenticated, isUsuario, protegerRuta, noCache, async (req, res) => {
-    // ...
+    const user = req.session.usuario;
+    if (!user || user.rol_id !== 3) {
+        return res.redirect('/login');
+    }
+
+    const { departamento_id, descripcion, ubicacion } = req.body;
+    const departamentoId = Number(departamento_id);
+
+    if (!departamentoId || !descripcion || !ubicacion) {
+        return res.status(400).send('Por favor completa todos los campos del formulario.');
+    }
+
+    try {
+        await db.query(
+            'INSERT INTO tickets (descripcion, ubicacion, usuario_id, departamento_id) VALUES (?, ?, ?, ?)',
+            [descripcion, ubicacion, user.id, departamentoId]
+        );
+        return res.redirect('/usuariosN1');
+    } catch (error) {
+        console.error('Error al guardar el ticket:', error);
+        return res.status(500).send('Error al crear el ticket. Intenta de nuevo más tarde.');
+    }
 });
 
 //ADMIN DEPARTAMENTO
@@ -159,7 +180,7 @@ router.get('/adminDepto', isAuthenticated, isAdminDepto, protegerRuta,noCache, t
 
 router.post('/actualizarTicket', isAuthenticated, isAdminDepto, protegerRuta, noCache, ticketController.actualizarTicket);
 
-router.get('/reporteMensual', isAuthenticated, isAdminDepto, protegerRuta, noCache, async (req, res) => {
+router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noCache, async (req, res) => {
     const user = req.session.usuario;
     if (!user) return res.redirect('/login'); 
 
