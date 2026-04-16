@@ -193,7 +193,7 @@ router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noC
     const user = req.session.usuario;
     if (!user) return res.redirect('/login'); 
 
-    let mesSeleccionado = req.query.mes;
+    let mesSeleccionado = req.query.mes; // Formato YYYY-MM
     if (!mesSeleccionado) {
         const hoy = new Date();
         const año = hoy.getFullYear();
@@ -202,28 +202,37 @@ router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noC
     }
 
     try {
-        // En Supabase, traemos los departamentos y contamos los tickets asociados.
-        // Simulamos el comportamiento del mes filtrando manualmente o con rpc.
-        // Aquí traemos los nombres de departamentos y luego los tickets de ese mes.
-        
+        console.log(`--- Generando reporte para: ${mesSeleccionado} ---`);
+
+        // 1. Obtener departamentos
         const { data: deptos, error: errDeptos } = await supabase
             .from('departamentos')
             .select('nombre, id');
             
         if (errDeptos) throw errDeptos;
 
-        // Traemos los tickets del mes seleccionado
+        // 2. Definir rango de fechas para el mes
+        const inicioMes = `${mesSeleccionado}-01T00:00:00Z`;
+        
+        // Calculamos el último día del mes
+        const [anio, mesNum] = mesSeleccionado.split('-').map(Number);
+        const ultimoDia = new Date(anio, mesNum, 0).getDate(); // El día 0 del mes siguiente es el último del actual
+        const finMes = `${mesSeleccionado}-${ultimoDia}T23:59:59Z`;
+
+        console.log(`Rango de búsqueda: ${inicioMes} hasta ${finMes}`);
+
+        // 3. Traemos los tickets del rango seleccionado
         const { data: ticketsMes, error: errTickets } = await supabase
             .from('tickets')
             .select('departamento_id')
-            .gte('fecha_creacion', `${mesSeleccionado}-01`)
-            .lte('fecha_creacion', `${mesSeleccionado}-31T23:59:59`); // Aproximación simple del fin de mes
+            .gte('fecha_creacion', inicioMes)
+            .lte('fecha_creacion', finMes);
 
         if (errTickets) throw errTickets;
 
-        // Agrupamos en JS para obtener las estadísticas
+        // 4. Agrupamos en JS para obtener las estadísticas
         const estadisticas = deptos.map(d => {
-            const total = ticketsMes.filter(t => t.departamento_id === d.id).length;
+            const total = (ticketsMes || []).filter(t => t.departamento_id === d.id).length;
             return { departamento: d.nombre, total };
         });
 
@@ -232,8 +241,8 @@ router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noC
             mesSeleccionado: mesSeleccionado 
         });
     } catch (error) {
-        console.error("Error al generar el reporte mensual:", error);
-        res.status(500).send("Error al generar el reporte");
+        console.error("Error al generar el reporte mensual en Supabase:", error);
+        res.status(500).send("Error al generar el reporte mensual. Por favor revisa la consola del servidor.");
     }
 });
 

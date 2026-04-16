@@ -41,8 +41,9 @@ html(lang="es")
               input(type="text", name="q", placeholder="Buscar por nombre o correo", value=(query && query.q) || '')
               select(name="rol")
                 option(value="") Todos los roles
-                option(value="1" selected=(query && query.rol == '1')) Admin
-                option(value="2" selected=(query && query.rol == '2')) Usuario
+                option(value="1" selected=(query && query.rol == '1')) Admin General
+                option(value="2" selected=(query && query.rol == '2')) Admin Área
+                option(value="3" selected=(query && query.rol == '3')) Usuario
               select(name="departamento")
                 option(value="") Todos los departamentos
                 each dep in departamentos

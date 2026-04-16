@@ -18,7 +18,7 @@ html(lang="es")
       .field.input-icon
         label Nombre
         i.bi.bi-person
-        input(type="text", name="nombre", required)
+        input(type="text", name="nombre", pattern="[A-Za-zÀ-ÿ\\s]+", title="Solo se permiten letras y espacios", minlength="3", required)
 
       .field.input-icon
         label Correo
@@ -28,7 +28,7 @@ html(lang="es")
       .field.input-icon
         label Contraseña
         i.bi.bi-lock
-        input(type="password", name="password", required)
+        input(type="password", name="password", minlength="6", title="La contraseña debe tener al menos 6 caracteres", required)
 
   
       .field
