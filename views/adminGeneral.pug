@@ -16,24 +16,25 @@ html(lang="es")
     .app
       .sidebar
         h2 ADMIN GENERAL
-        a(href="/reporteMensual")
-          i.bi.bi-bar-chart-fill
-          | Reportes Mensuales
-        a(href="/logout")
-          i.bi.bi-box-arrow-right
-          | Cerrar sesión
+        nav
+          a(href="/reporteMensual")
+            i.bi.bi-bar-chart-fill
+            | Reportes Mensuales
+          a(href="/logout")
+            i.bi.bi-box-arrow-right
+            | Cerrar sesión
 
       .main
         .header
           h1 Gestión de Usuarios
-          p Control centralizado para crear, editar y filtrar usuarios
+          p Control centralizado de acceso
 
         .card
           .card-grid
-            h2 Usuarios
-            button.btn(onclick="window.location.href='/altasUsuario'")
+            h2 Usuarios registrados
+            button.btn.btn-primary(onclick="window.location.href='/altasUsuario'")
               i.bi.bi-person-plus
-              | Nuevo usuario
+              span.ms-2 Nuevo usuario
 
           form(method="get", action="/adminGeneral")
             .filter-panel
@@ -67,7 +68,6 @@ html(lang="es")
                   td= usuario.departamento_nombre || usuario.departamento_id || '-'
                   td
                     .action-group
-                      a.action-link(href=`/usuarios/${usuario.id}/editar`) Editar
                       form(method="post", action=`/usuarios/${usuario.id}/eliminar`, style="display:inline")
                         button.action-delete(type="submit", onclick="return confirm('¿Eliminar usuario?')") Eliminar
               if usuarios.length === 0

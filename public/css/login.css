@@ -111,53 +111,48 @@ body {
 
 
 @media (max-width: 768px) {
-
   body {
-    padding: 15px;
+    padding: 10px !important;
     height: auto !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .login-container {
     width: 100% !important;
-    max-width: 100%;
-    padding: 25px !important;
+    max-width: 380px !important;
+    padding: 30px 20px !important;
+    margin: 40px auto !important;
+    border-radius: 20px !important;
   }
 
   .back-btn {
-    top: 10px;
-    left: 10px;
-    font-size: 12px;
-    padding: 6px 10px;
+    position: fixed !important;
+    top: 15px !important;
+    left: 15px !important;
+    z-index: 1000 !important;
+    font-size: 14px !important;
   }
-
-  .login-container h2 {
-    font-size: 1.5rem;
-  }
-
 }
 
 @media (max-width: 480px) {
-
   .login-container {
-    padding: 20px !important;
+    padding: 25px 15px !important;
   }
 
   .login-container h2 {
-    font-size: 1.3rem;
-  }
-
-  .login-container p {
-    font-size: 12px;
+    font-size: 1.6rem !important;
   }
 
   .input-group input {
-    padding: 8px;
-    font-size: 0.9rem;
+    padding: 12px !important;
+    font-size: 16px !important; /* Evita zoom en iOS */
   }
 
   .btn {
-    padding: 10px;
-    font-size: 0.9rem;
+    padding: 14px !important;
+    font-size: 1rem !important;
   }
-
 }

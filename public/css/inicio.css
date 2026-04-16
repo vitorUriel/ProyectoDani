@@ -67,21 +67,35 @@ body {
     position: relative;
     width: 100%;
     min-height: auto;
+    padding: 20px;
+  }
+  
+  .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .sidebar a {
+    margin-bottom: 0;
   }
 }
-
 
 @media (max-width: 576px) {
   .main-content {
     padding: 20px 15px;
+    text-align: center;
   }
 
   .title-main {
-    font-size: 2rem; 
+    font-size: 2.2rem; 
   }
 
   .subtitle {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    margin-bottom: 20px;
   }
 
   .sidebar {
@@ -89,15 +103,25 @@ body {
   }
 
   .sidebar .logo {
-    width: 45px; 
+    width: 80px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  .sidebar h4 {
+    text-align: center;
+    margin-bottom: 5px;
   }
 
   .sidebar a {
-    padding: 8px;
-    font-size: 0.95rem;
+    padding: 10px;
+    font-size: 0.9rem;
+    flex: 1 1 100%;
+    text-align: center;
   }
 
   .card-custom {
-    border-radius: 12px;
+    border-radius: 20px;
+    padding: 20px !important;
   }
 }
