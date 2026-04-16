@@ -1,7 +1,6 @@
 const supabase = require('../config/supabase');
 const bcrypt = require('bcrypt');
 
-// --- FUNCIÓN: Muestra el formulario ---
 const mostrarVistaAltas = async (req, res) => {
     try {
         const { data: deptos, error } = await supabase
@@ -37,10 +36,8 @@ const crearUsuario = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Faltan campos obligatorios' });
         }
 
-        // Encriptar contraseña
         const passwordEncriptada = await bcrypt.hash(password, 10);
 
-        // Preparar objeto de inserción
         const nuevoUsuario = { 
             nombre: nombre, 
             correo: correo, 
@@ -51,11 +48,10 @@ const crearUsuario = async (req, res) => {
 
         console.log("Objeto a insertar en Supabase:", nuevoUsuario);
 
-        // Insertar en Supabase
         const { data, error } = await supabase
             .from('usuarios')
             .insert([nuevoUsuario])
-            .select(); // Pedimos que nos devuelva el objeto insertado para confirmar
+            .select(); 
         
         if (error) {
             console.error("❌ ERROR DE SUPABASE:");

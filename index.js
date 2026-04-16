@@ -49,7 +49,6 @@ app.use(helmet({
 }));
 
 // 5. Archivos Estáticos (CSS, Imágenes, JS del cliente)
-// Suponiendo que tienes una carpeta llamada "public"
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 6. USO DE LAS RUTAS
@@ -60,7 +59,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
     
-    // Prueba rápida de conexión a Supabase
     try {
         const { data, error } = await supabase.from('usuarios').select('count', { count: 'exact', head: true });
         if (error) throw error;

@@ -6,7 +6,7 @@ const authcontroller = require('../controllers/authcontroller');
 const usuarcontroller = require('../controllers/usuarioscontroller');
 const supabase = require('../config/supabase');
 
-// SEGURIDAD
+
 const noCache = (req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.set('Pragma', 'no-cache');
@@ -35,7 +35,6 @@ const protegerRuta = (req, res, next) => {
 
 router.get('/logout', authcontroller.logout);
 
-// Validar si es Administrador General (Rol 1)
 const isAdminGeneral = (req, res, next) => {
     if (req.session.usuario && req.session.usuario.rol_id == 1) {
         return next(); 
@@ -49,7 +48,6 @@ const isAdminGeneral = (req, res, next) => {
             `);
 };
 
-// Validar si es Administrador de Departamento (Rol 2)
 
 const isAdminDepto = (req, res, next) => {
     if (req.session.usuario && req.session.usuario.rol_id == 2) {
@@ -104,7 +102,6 @@ router.get('/usuariosN1', isAuthenticated, protegerRuta, noCache, async (req, re
     if (!user) return res.redirect('/login');
 
     try {
-        // Hacemos la consulta con Supabase
         const { data: misTickets, error } = await supabase
             .from('tickets')
             .select('*')
@@ -128,17 +125,15 @@ router.get('/ticketUsuario', isAuthenticated, isUsuario, protegerRuta, noCache, 
     if (!user || user.rol_id !== 3) return res.redirect('/login');
 
     try {
-        // 1. Atrapamos el ID que viene en la URL (si no viene nada, queda vacío)
         const deptoPreseleccionado = req.query.depto || "";
 
-        // 2. Traemos los departamentos de Supabase
         const { data: departamentos, error } = await supabase
             .from('departamentos')
             .select('id, nombre');
 
         if (error) throw error;
 
-        // 3. Renderizamos la vista y le pasamos todo
+       
         res.render('ticketUsuario', { 
             departamentos: departamentos,
             deptoSeleccionado: deptoPreseleccionado 
@@ -193,7 +188,7 @@ router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noC
     const user = req.session.usuario;
     if (!user) return res.redirect('/login'); 
 
-    let mesSeleccionado = req.query.mes; // Formato YYYY-MM
+    let mesSeleccionado = req.query.mes; 
     if (!mesSeleccionado) {
         const hoy = new Date();
         const año = hoy.getFullYear();
@@ -204,24 +199,20 @@ router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noC
     try {
         console.log(`--- Generando reporte para: ${mesSeleccionado} ---`);
 
-        // 1. Obtener departamentos
         const { data: deptos, error: errDeptos } = await supabase
             .from('departamentos')
             .select('nombre, id');
             
         if (errDeptos) throw errDeptos;
 
-        // 2. Definir rango de fechas para el mes
         const inicioMes = `${mesSeleccionado}-01T00:00:00Z`;
         
-        // Calculamos el último día del mes
         const [anio, mesNum] = mesSeleccionado.split('-').map(Number);
-        const ultimoDia = new Date(anio, mesNum, 0).getDate(); // El día 0 del mes siguiente es el último del actual
+        const ultimoDia = new Date(anio, mesNum, 0).getDate(); 
         const finMes = `${mesSeleccionado}-${ultimoDia}T23:59:59Z`;
 
         console.log(`Rango de búsqueda: ${inicioMes} hasta ${finMes}`);
 
-        // 3. Traemos los tickets del rango seleccionado
         const { data: ticketsMes, error: errTickets } = await supabase
             .from('tickets')
             .select('departamento_id')
@@ -230,7 +221,6 @@ router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noC
 
         if (errTickets) throw errTickets;
 
-        // 4. Agrupamos en JS para obtener las estadísticas
         const estadisticas = deptos.map(d => {
             const total = (ticketsMes || []).filter(t => t.departamento_id === d.id).length;
             return { departamento: d.nombre, total };
@@ -251,22 +241,17 @@ router.get('/adminGeneral', isAuthenticated, isAdminGeneral, protegerRuta,noCach
 
 
 
-//altasUsuarios
 router.get('/altasUsuario', isAuthenticated, isAdminGeneral, protegerRuta,noCache, altascontroller.mostrarVistaAltas);
 router.post('/usuarios', isAuthenticated, isAdminGeneral, protegerRuta, noCache, altascontroller.crearUsuario);
 
 
 
-// Ruta para imprimir un ticket específico usando un parámetro en la URL (:id)
 router.get('/ticketImprimir/:id', isAuthenticated, protegerRuta, noCache, async (req, res) => {
-    // Verificamos que haya un usuario logueado (puedes validar que sea admin si lo deseas)
     const user = req.session.usuario;
     if (!user) return res.redirect('/login');
 
-    const idTicket = req.params.id; // Extraemos el ID de la URL
-
+    const idTicket = req.params.id; 
     try {
-        // Buscamos solo el ticket que coincide con ese ID en Supabase
         const { data: ticketEncontrado, error } = await supabase
             .from('tickets')
             .select('*')

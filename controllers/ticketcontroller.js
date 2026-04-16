@@ -5,7 +5,6 @@ const mostrarAdminDepto = async (req, res) => {
     if (!user) return res.redirect('/login');
 
     try {
-        // 1. Obtener nombre del departamento
         const { data: depto, error: errDepto } = await supabase
             .from('departamentos')
             .select('nombre')
@@ -17,7 +16,6 @@ const mostrarAdminDepto = async (req, res) => {
             return res.status(404).send('Departamento no encontrado');
         }
 
-        // 2. Obtener tickets del departamento
         const { data: tickets, error: errTickets } = await supabase
             .from('tickets')
             .select('*')

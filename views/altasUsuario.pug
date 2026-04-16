@@ -116,10 +116,9 @@ script.
               icon: 'success',
               confirmButtonColor: '#2e7d32'
             });
-            e.target.reset(); // Limpia los campos del formulario
+            e.target.reset(); 
             
           } else {
-            // Alerta de ERROR (Ej: Correo duplicado)
             Swal.fire({
               title: 'Error al registrar',
               text: resultData.message || 'Hubo un problema al crear el usuario.',
@@ -129,7 +128,6 @@ script.
           }
 
         } catch (error) {
-          // Alerta de ERROR DE CONEXIÓN
           Swal.fire({
             title: 'Error de conexión',
             text: 'No se pudo contactar con el servidor.',
@@ -143,12 +141,10 @@ script.
 
 script.
     window.addEventListener('pageshow', function (event) {
-        // Chequeo doble: BFCache nativo o API de navegación (botón atrás = tipo 2)
         var esBotonAtras = event.persisted || 
                           (window.performance && window.performance.getEntriesByType("navigation")[0].type === 'back_forward');
         
         if (esBotonAtras) {
-            // Recarga obligatoria ignorando la caché local
             window.location.reload(true); 
         }
     });

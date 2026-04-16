@@ -6,12 +6,10 @@ async function mostrarUsuarios(req, res) {
     const rol = req.query.rol || '';
     const departamento = req.query.departamento || '';
 
-    // Iniciamos la consulta a usuarios con los joins correspondientes
     let query = supabase
       .from('usuarios')
       .select('*, departamentos (nombre), roles (nombre)');
 
-    // Aplicar filtros si existen
     if (q) {
       query = query.or(`nombre.ilike.%${q}%,correo.ilike.%${q}%`);
     }
@@ -25,7 +23,6 @@ async function mostrarUsuarios(req, res) {
     const { data: usuariosRaw, error: errUsuarios } = await query;
     if (errUsuarios) throw errUsuarios;
 
-    // Formatear datos para que coincidan con la vista
     const usuarios = usuariosRaw.map(u => ({
       ...u,
       departamento_nombre: u.departamentos ? u.departamentos.nombre : 'N/A',

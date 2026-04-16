@@ -8,7 +8,6 @@ if (!supabaseUrl || !supabaseKey) {
     console.error('❌ Error: Faltan las variables de entorno de Supabase (DB_SUPABASE_URL o DB_SUPABASE_KEY)');
 }
 
-// Creamos la instancia del cliente
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 module.exports = supabase;
