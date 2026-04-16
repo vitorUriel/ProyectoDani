@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const path = require('path');
 const router = require('./routes/routes'); 
+const supabase = require('./config/supabase'); // Importar Supabase
 
 const app = express();
 
@@ -56,6 +57,15 @@ app.use(router);
 
 // 7. Arranque del servidor (Buena práctica: usar puerto del .env o 3000 por defecto)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    
+    // Prueba rápida de conexión a Supabase
+    try {
+        const { data, error } = await supabase.from('usuarios').select('count', { count: 'exact', head: true });
+        if (error) throw error;
+        console.log('✅ Conexión exitosa a Supabase');
+    } catch (err) {
+        console.error('⚠️ Advertencia: No se pudo conectar a Supabase:', err.message);
+    }
 });

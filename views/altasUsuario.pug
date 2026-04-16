@@ -44,10 +44,8 @@ html(lang="es")
         label Departamento
         select(name="departamento_id", required)
           option(value="") N/A
-          option(value="2") Mantenimiento
-          option(value="3") Jardinería
-          option(value="4") Limpieza
-          option(value="5") Soporte
+          each depto in deptos
+            option(value=depto.id) #{depto.nombre}
 
       button.btn(type="submit")
         i.bi.bi-check-circle
@@ -70,9 +68,11 @@ script.
     const rolSeleccionado = e.target.value;
     if (rolSeleccionado === '1' || rolSeleccionado === '3') {
       selectDepto.value = ""; 
-      selectDepto.disabled = true; 
+      selectDepto.style.opacity = "0.5";
+      selectDepto.style.pointerEvents = "none";
     } else {
-      selectDepto.disabled = false;
+      selectDepto.style.opacity = "1";
+      selectDepto.style.pointerEvents = "auto";
     }
   });
 

@@ -22,55 +22,40 @@ html(lang="es")
       .footer
         | © Sistema de tickets
 
-        //- Asegúrate de tener importado SweetAlert2
-script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
+    script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
 
-script.
-    // 1. Revisamos si la URL trae un chisme (ej. misitio.com/login?error=password)
-    const urlParams = new URLSearchParams(window.location.search);
-    const error = urlParams.get('error');
+    script.
+        // 1. Revisamos si la URL trae un parámetro de error
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
 
-    // 2. Si hay un error, disparamos la animación bonita
-    if (error === 'no_existe') {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'El correo ingresado no existe.',
-            heightAuto: false,      
-            scrollbarPadding: false
-        });
-    } else if (error === 'password') {
-        Swal.fire({
-            icon: 'error',
-            title: 'Acceso Denegado',
-            text: 'La contraseña es incorrecta.',
-            heightAuto: false,       
-            scrollbarPadding: false
-        });
-    }
-
-    // 3. Limpiamos la URL para que no se quede pegado el mensaje si recarga la página
-    if (error) {
-        window.history.replaceState(null, '', window.location.pathname);
-    }
-  
-script.
-    window.addEventListener('pageshow', function (event) {
-        var navigation = window.performance && window.performance.getEntriesByType("navigation");
-        var esBotonAtras = event.persisted || (navigation && navigation[0] && navigation[0].type === 'back_forward');
-        if (esBotonAtras) {
-            window.location.reload();
+        // 2. Si hay un error, mostramos la alerta de SweetAlert2
+        if (error === 'no_existe') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Usuario no encontrado',
+                text: 'El correo electrónico ingresado no está registrado.',
+                confirmButtonColor: '#2e7d32'
+            });
+        } else if (error === 'password') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Contraseña incorrecta',
+                text: 'La contraseña ingresada no es válida.',
+                confirmButtonColor: '#2e7d32'
+            });
         }
-    });
 
-  script.
-    window.addEventListener('pageshow', function (event) {
-        // Chequeo doble: BFCache nativo o API de navegación (botón atrás = tipo 2)
-        var esBotonAtras = event.persisted || 
-                          (window.performance && window.performance.getEntriesByType("navigation")[0].type === 'back_forward');
-        
-        if (esBotonAtras) {
-            // Recarga obligatoria ignorando la caché local
-            window.location.reload(true); 
+        // 3. Limpiamos la URL para evitar que la alerta se repita al recargar
+        if (error) {
+            window.history.replaceState(null, '', window.location.pathname);
         }
-    });
+
+        // 4. Manejo del botón atrás y BFCache
+        window.addEventListener('pageshow', function (event) {
+            var navigation = window.performance && window.performance.getEntriesByType("navigation");
+            var esBotonAtras = event.persisted || (navigation && navigation[0] && navigation[0].type === 'back_forward');
+            if (esBotonAtras) {
+                window.location.reload();
+            }
+        });

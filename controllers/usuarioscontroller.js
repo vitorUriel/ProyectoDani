@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const supabase = require('../config/supabase');
 
 async function mostrarUsuarios(req, res) {
   try {
@@ -6,29 +6,36 @@ async function mostrarUsuarios(req, res) {
     const rol = req.query.rol || '';
     const departamento = req.query.departamento || '';
 
-    let sql = `
-      SELECT u.*, d.nombre AS departamento_nombre
-      FROM usuarios u
-      LEFT JOIN departamentos d ON u.departamento_id = d.id
-      WHERE 1 = 1
-    `;
-    const params = [];
+    // Iniciamos la consulta a usuarios con el join de departamentos
+    let query = supabase
+      .from('usuarios')
+      .select('*, departamentos (nombre)');
 
+    // Aplicar filtros si existen
     if (q) {
-      sql += ' AND (u.nombre LIKE ? OR u.correo LIKE ?)';
-      params.push(`%${q}%`, `%${q}%`);
+      query = query.or(`nombre.ilike.%${q}%,correo.ilike.%${q}%`);
     }
     if (rol) {
-      sql += ' AND u.rol_id = ?';
-      params.push(rol);
+      query = query.eq('rol_id', rol);
     }
     if (departamento) {
-      sql += ' AND u.departamento_id = ?';
-      params.push(departamento);
+      query = query.eq('departamento_id', departamento);
     }
 
-    const [usuarios] = await db.query(sql, params);
-    const [departamentos] = await db.query('SELECT id, nombre FROM departamentos');
+    const { data: usuariosRaw, error: errUsuarios } = await query;
+    if (errUsuarios) throw errUsuarios;
+
+    // Formatear datos para que coincidan con lo que espera la vista (departamento_nombre)
+    const usuarios = usuariosRaw.map(u => ({
+      ...u,
+      departamento_nombre: u.departamentos ? u.departamentos.nombre : 'N/A'
+    }));
+
+    const { data: departamentos, error: errDeptos } = await supabase
+      .from('departamentos')
+      .select('id, nombre');
+    
+    if (errDeptos) throw errDeptos;
 
     res.render('adminGeneral', {
       usuarios,
@@ -36,7 +43,7 @@ async function mostrarUsuarios(req, res) {
       query: req.query || {}
     });
   } catch (error) {
-    console.error('Error cargar adminGeneral:', error);
+    console.error('Error cargar adminGeneral con Supabase:', error);
     res.status(500).send('Error al cargar la gestión de usuarios');
   }
 }

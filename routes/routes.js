@@ -4,7 +4,7 @@ const ticketController = require('../controllers/ticketcontroller');
 const altascontroller = require('../controllers/altascontroller');
 const authcontroller = require('../controllers/authcontroller');
 const usuarcontroller = require('../controllers/usuarioscontroller');
-const db = require('../config/database')
+const supabase = require('../config/supabase');
 
 // SEGURIDAD
 const noCache = (req, res, next) => {
@@ -104,17 +104,13 @@ router.get('/usuariosN1', isAuthenticated, protegerRuta, noCache, async (req, re
     if (!user) return res.redirect('/login');
 
     try {
-        // Hacemos la consulta
-        const resultado = await db.query('SELECT * FROM tickets WHERE usuario_id = ?', [user.id]);
+        // Hacemos la consulta con Supabase
+        const { data: misTickets, error } = await supabase
+            .from('tickets')
+            .select('*')
+            .eq('usuario_id', user.id);
         
-        // Dependiendo de si usas mysql o mysql2, los datos vienen en el índice 0 o directo.
-        // Esta línea asegura que SIEMPRE saquemos el arreglo de tickets correctamente.
-        let misTickets = [];
-        if (Array.isArray(resultado[0])) {
-            misTickets = resultado[0]; // Para mysql2 (devuelve [rows, fields])
-        } else if (Array.isArray(resultado)) {
-            misTickets = resultado;    // Para otras configuraciones que devuelven directo los rows
-        }
+        if (error) throw error;
 
         res.render('usuariosN1', { 
             titulo: 'Panel Usuario',
@@ -135,13 +131,17 @@ router.get('/ticketUsuario', isAuthenticated, isUsuario, protegerRuta, noCache, 
         // 1. Atrapamos el ID que viene en la URL (si no viene nada, queda vacío)
         const deptoPreseleccionado = req.query.depto || "";
 
-        // 2. Traemos los departamentos de la base de datos
-        const [departamentos] = await db.query('SELECT id, nombre FROM departamentos');
+        // 2. Traemos los departamentos de Supabase
+        const { data: departamentos, error } = await supabase
+            .from('departamentos')
+            .select('id, nombre');
+
+        if (error) throw error;
 
         // 3. Renderizamos la vista y le pasamos todo
         res.render('ticketUsuario', { 
             departamentos: departamentos,
-            deptoSeleccionado: deptoPreseleccionado // <--- Pasamos la variable nueva
+            deptoSeleccionado: deptoPreseleccionado 
         });
     } catch (error) {
         console.error(error);
@@ -164,10 +164,19 @@ router.post('/tickets', isAuthenticated, isUsuario, protegerRuta, noCache, async
     }
 
     try {
-        await db.query(
-            'INSERT INTO tickets (descripcion, ubicacion, usuario_id, departamento_id) VALUES (?, ?, ?, ?)',
-            [descripcion, ubicacion, user.id, departamentoId]
-        );
+        const { error } = await supabase
+            .from('tickets')
+            .insert([
+                { 
+                    descripcion, 
+                    ubicacion, 
+                    usuario_id: user.id, 
+                    departamento_id: departamentoId 
+                }
+            ]);
+
+        if (error) throw error;
+
         return res.redirect('/usuariosN1');
     } catch (error) {
         console.error('Error al guardar el ticket:', error);
@@ -193,23 +202,30 @@ router.get('/reporteMensual', isAuthenticated, isAdminGeneral, protegerRuta, noC
     }
 
     try {
-        // 2. Consulta SQL: Cuenta tickets por departamento en ese mes en específico.
-        const query = `
-            SELECT d.nombre AS departamento, COUNT(t.id) AS total 
-            FROM departamentos d 
-            LEFT JOIN tickets t ON d.id = t.departamento_id 
-                 AND DATE_FORMAT(t.fecha_creacion, '%Y-%m') = ?
-            GROUP BY d.id, d.nombre
-        `;
+        // En Supabase, traemos los departamentos y contamos los tickets asociados.
+        // Simulamos el comportamiento del mes filtrando manualmente o con rpc.
+        // Aquí traemos los nombres de departamentos y luego los tickets de ese mes.
         
-        const resultado = await db.query(query, [mesSeleccionado]);
-        
-        let estadisticas = [];
-        if (Array.isArray(resultado[0])) {
-            estadisticas = resultado[0];
-        } else if (Array.isArray(resultado)) {
-            estadisticas = resultado;
-        }
+        const { data: deptos, error: errDeptos } = await supabase
+            .from('departamentos')
+            .select('nombre, id');
+            
+        if (errDeptos) throw errDeptos;
+
+        // Traemos los tickets del mes seleccionado
+        const { data: ticketsMes, error: errTickets } = await supabase
+            .from('tickets')
+            .select('departamento_id')
+            .gte('fecha_creacion', `${mesSeleccionado}-01`)
+            .lte('fecha_creacion', `${mesSeleccionado}-31T23:59:59`); // Aproximación simple del fin de mes
+
+        if (errTickets) throw errTickets;
+
+        // Agrupamos en JS para obtener las estadísticas
+        const estadisticas = deptos.map(d => {
+            const total = ticketsMes.filter(t => t.departamento_id === d.id).length;
+            return { departamento: d.nombre, total };
+        });
 
         res.render('reporteMensual', { 
             estadisticas: estadisticas,
@@ -241,17 +257,15 @@ router.get('/ticketImprimir/:id', isAuthenticated, protegerRuta, noCache, async 
     const idTicket = req.params.id; // Extraemos el ID de la URL
 
     try {
-        // Buscamos solo el ticket que coincide con ese ID
-        const resultado = await db.query('SELECT * FROM tickets WHERE id = ?', [idTicket]);
+        // Buscamos solo el ticket que coincide con ese ID en Supabase
+        const { data: ticketEncontrado, error } = await supabase
+            .from('tickets')
+            .select('*')
+            .eq('id', idTicket)
+            .single();
         
-        let ticketEncontrado = null;
-        if (Array.isArray(resultado[0]) && resultado[0].length > 0) {
-            ticketEncontrado = resultado[0][0]; 
-        } else if (Array.isArray(resultado) && resultado.length > 0) {
-            ticketEncontrado = resultado[0];
-        }
-
-        if (!ticketEncontrado) {
+        if (error || !ticketEncontrado) {
+            console.error("Error o ticket no encontrado:", error);
             return res.status(404).send("El ticket solicitado no existe.");
         }
 
